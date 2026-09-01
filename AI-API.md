@@ -340,3 +340,22 @@ format() 함수와 전개 연산자(*)를 사용하면 다음과 같이 더 간�
 
 ---
 
+### raise NotImplementedError
+
+`pass` 키워드를 입력해 놓아도 나중에 잊어버리는 경우가 많음. `raise` 키워드와 미구현 상태를 표현하는 `NotImplementedError`를 조합해 `raise NotImplementedError`를 사용하면 "아직 구현하지 않은 부분이에요!"라는 오류를 강제로 발생시킬 수도 있음.
+
+```python
+# 입력을 받습니다.
+number = input("정수 입력> ")
+number = int(number)
+# 조건문 사용
+if number > 0:    
+# 양수일 때: 아직 미구현 상태입니다.
+    raise NotImplementedError
+else:    
+# 음수일 때: 아직 미구현 상태입니다.
+    raise NotImplementedError
+```
+
+---
+
