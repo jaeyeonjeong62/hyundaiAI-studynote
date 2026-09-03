@@ -495,6 +495,28 @@ for i, v in enumerate(array):
     else:
         print(-1)
 ```
+리스트 컴프리헨션
+```
+# 기존 for문
+result = []
+for x in range(5):
+    result.append(x)  # ◀ 이 x가 앞의 x
+
+# 리스트 컴프리헨션
+result = [x for x in range(5)]
+#         ▲        ▲
+#      앞의 x    뒤의 x
+```
+```
+# 앞의 x를 x * 2로 변경
+double = [x * 2 for x in range(5)]
+# 결과: [0, 2, 4, 6, 8]
+```
+```
+# 앞의 x를 str(x)로 변경
+strings = [str(x) for x in range(5)]
+# 결과: ['0', '1', '2', '3', '4']
+```
 
 ---
 
