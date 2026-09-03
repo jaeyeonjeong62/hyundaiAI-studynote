@@ -483,6 +483,10 @@ if value == None:
      # None과 같은지 확인만 하면 됩니다.
     print("존재하지 않는 키에 접근했습니다.")
 ```
+```
+for key, value in movie.items():
+    print("()()".format(key,value))
+```
 
 ---
 
