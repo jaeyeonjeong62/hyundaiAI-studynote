@@ -487,6 +487,14 @@ if value == None:
 for key, value in movie.items():
     print("()()".format(key,value))
 ```
+```
+for i, v in enumerate(array):
+    if v == t_number:
+        print(i)
+        break
+    else:
+        print(-1)
+```
 
 ---
 
