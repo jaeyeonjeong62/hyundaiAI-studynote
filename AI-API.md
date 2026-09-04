@@ -520,3 +520,122 @@ strings = [str(x) for x in range(5)]
 
 ---
 
+## 2. 파이썬과 프로그래밍2
+
+### 함수
+
+### 문자열, 리스트, 딕셔너리와 관련된 함수
+
+**.replace()**
+- 문법: ```문자열.replace(찾을값, 바꿀값)```
+
+```
+review = "이 서비스는 별로예요"
+fixed = review.replace("별로예요", "최고예요")
+print(fixed)  # 출력: 이 서비스는 최고예요
+```
+
+**f.-string(포맷팅)**
+- 문법: ```f"{변수명}"```
+
+```
+user_name = "클라라"
+question = "파이썬 딕셔너리 사용법"
+# 실무 예시: 사용자 입력값을 넣어 AI에게 보낼 프롬프트를 자동 생성
+prompt = f"{user_name}님이 '{question}'에 대해 질문했습니다. 초보자 눈높이로 답변해주세요."
+print(prompt)
+# 출력: 클라라님이 '파이썬 딕셔너리 사용법'에 대해 질문했습니다. 초보자 눈높이로 답변해주세요.
+```
+
+**sorted() / .sort()**
+
+- 문법: ```sorted(리스트)``` (새 리스트 반환) / ```리스트.sort()``` (원본 변경)
+
+```
+numbers = [5, 2, 8, 1]
+print(numbers)
+numbers1 = sorted(numbers)
+print(numbers1)
+# 출력: [1, 2, 5, 8]  (원본 numbers는 그대로)
+
+numbers.sort()
+print(numbers)  # 출력: [1, 2, 5, 8]  (원본 자체가 바뀜)
+```
+
+**.index() / in**
+
+- 문법: ```값 in 리스트``` (있는지 확인), ```리스트.index(값)``` (몇 번째인지 확인)
+
+```
+skills = ["Git", "Python", "OpenAI API"]
+print("Python" in skills)      # 출력: True
+print(skills.index("Python"))  # 출력: 1  (0번부터 세서 두 번째)
+```
+
+**.keys()**
+
+- 문법: ```딕셔너리.keys()```
+
+```
+student = {"name": "클라라", "course": "AI서비스개발"}
+print(student.keys())  
+
+# 출력: dict_keys(['name', 'course'])
+```
+
+**.values()**
+
+- 문법: ```딕셔너리.values()```
+
+```
+student = {"name": "클라라", "course": "AI서비스개발"}
+print(student.values())  
+# 출력: dict_values(['클라라', 'AI서비스개발'])
+```
+
+**.items()**
+
+- 문법: ```for key, value in 딕셔너리.items():```
+
+```
+profile = {"이름": "클라라", "관심분야": "AI 서비스 기획"}
+for key, value in profile.items():    
+print(f"{key}:{value}")   
+
+# 출력:# 이름: 클라라# 관심분야: AI 서비스 기획
+```
+
+**.update()**
+
+- 문법: ```딕셔너리.update({key: value})```
+
+```
+user = {"name": "클라라", "level": "초급"}
+user.update({"level": "중급", "course_week": 3})
+print(user)  
+
+# 출력: {'name': '클라라', 'level': '중급', 'course_week': 3}
+```
+
+**중첩 딕셔너리(Nested Dictionary)**
+
+- 문법: ```딕셔너리["key1"]["key2"]```
+
+```
+# 실무 예시: OpenAI API 응답 형태를 흉내낸 딕셔너리
+api_response = {    "id": "chatcmpl-123",   
+                    "choices": [ { "message": { "role": "assistant",
+                    "content": "안녕하세요! 무엇을 도와드릴까요?"  } 
+                     }  
+                      ]
+                } 
+                    
+# 서랍장(딕셔너리) 속 리스트, 그 리스트 속 딕셔너리를 차례로 열어서 답변만 꺼내기
+
+answer = api_response["choices"][0]["message"]["content"]
+
+print(answer)  # 출력: 안녕하세요! 무엇을 도와드릴까요?
+```
+
+---
+
