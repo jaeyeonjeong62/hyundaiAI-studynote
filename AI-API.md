@@ -617,6 +617,34 @@ print(user)
 # 출력: {'name': '클라라', 'level': '중급', 'course_week': 3}
 ```
 
+| 목적         | 코드                                 |
+| ---------- | ---------------------------------- |
+| 값 하나 수정    | `dic["키"] = 값`                     |
+| 값 하나 추가    | `dic["새 키"] = 값`                   |
+| 여러 값 추가·수정 | `dic.update({"키1": 값1, "키2": 값2})` |
+
+```
+# 다른 딕셔너리의 내용으로 업데이트
+original = {
+    "name": "재연",
+    "age": 28
+}
+
+new_data = {
+    "age": 29,
+    "city": "서울"
+}
+
+original.update(new_data)
+
+print(original)
+# {'name': '재연', 'age': 29, 'city': '서울'}
+```
+```
+# 키워드 인자 방식
+person.update(age=29, city="서울")
+```
+
 **중첩 딕셔너리(Nested Dictionary)**
 
 - 문법: ```딕셔너리["key1"]["key2"]```
