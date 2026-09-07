@@ -639,3 +639,11 @@ print(answer)  # 출력: 안녕하세요! 무엇을 도와드릴까요?
 
 ---
 
+```
+def get_input(prompt, value):
+    try:
+        return input(prompt)
+    except EOFError:
+        print(f"입력처리 불가 --> {value} 기본값으로 진행합니다.")
+        return value
+```
