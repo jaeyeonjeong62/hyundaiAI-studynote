@@ -695,3 +695,137 @@ def get_input(prompt, value):
 
 ---
 
+### 표준 모듈
+
+- math 모듈
+
+**math 모듈의 주요 함수**
+|변수/함수|설명|
+|---|---|
+|```sin(x)```|사인값|
+|```cos(x)```|코사인값|
+|```tan(x)```|탄젠트값|
+|```log(x[, base])```|로그값|
+|```ceil(x)```|올림|
+|```floor(x)```|내림|
+
+*은행가 반올림(Banker's Rounding): 정수 부분이 짝수일 때 소수점이 5면 내리고, 홀수일 때 5면 올립니다.*
+```
+>>> round(1.5)2
+>>> round(2.5)2
+>>> round(3.5)4
+>>> round(4.5)4
+```
+
+**from 구문 (모듈 이름 생략하기)**
+```
+from 모듈이름 import 가져오고싶은변수또는함수
+```
+**모두 가져오기**
+```
+from math import *
+```
+**as 구문(별칭 지정하기)**
+```
+import 모듈 as 사용하고싶은식별자
+```
+
+- random 모듈
+
+```
+import random
+print("# random 모듈")
+
+# random(): 0.0 <= x < 1.0 사이의 float를 리턴합니다.
+
+print("- random():", random.random())
+
+# uniform(min, max): 지정한 범위 사이의 float를 리턴합니다.
+
+print("- uniform(10, 20):", random.uniform(10, 20))
+# randrange(): 지정한 범위의 int를 리턴합니다.
+# - randrange(max): 0부터 max 사이의 값을 리턴합니다.
+# - randrange(min, max): min부터 max 사이의 값을 리턴합니다.
+print("- randrange(10):", random.randrange(10))
+
+# choice(list): 리스트 내부에 있는 요소를 랜덤하게 선택합니다.
+print("- choice([1, 2, 3, 4, 5]):", random.choice([1, 2, 3, 4, 5]))
+
+# shuffle(list): 리스트의 요소들을 랜덤하게 섞습니다.
+print("- shuffle([1, 2, 3, 4, 5]):", random.shuffle([1, 2, 3, 4, 5]))
+
+# sample(list, k=<숫자>): 리스트의 요소 중에 k개를 뽑습니다.
+print("- sample([1, 2, 3, 4, 5], k=2):", random.sample([1, 2, 3, 4, 5], k=2))
+```
+
+*```shuffle()```은 리스트를 그 자리에서(in-place) 섞기 때문에 반환값은 ```None```입니다. 섞인 결과를 보려면 원본 리스트를 다시 출력해야 합니다.*
+
+*```random.py```처럼 사용 중인 모듈과 같은 이름으로 파일을 저장하면 안 됩니다.*
+
+*파이썬의 import 구문은 가장 먼저 현재 폴더에서 같은 이름의 파일을 찾습니다. ```random.py```로 저장하면 진짜 random 모듈이 아니라 자기 자신을 불러와 버려서 오류가 발생합니다.*
+
+- sys 모듈
+
+```
+# 모듈을 읽어 들입니다.
+import sys # 명령 매개변수를 출력합니다.
+print(sys.argv)
+print("---")
+
+# 컴퓨터 환경과 관련된 정보를 출력합니다.
+print("getwindowsversion():", sys.getwindowsversion())
+print("---")
+print("copyright:", sys.copyright)
+print("---")
+print("version:", sys.version)
+# 프로그램을 강제로 종료합니다.
+sys.exit()
+```
+
+```
+# read_file.py
+
+import sys
+
+file_path = sys.argv[1]
+
+with open(file_path, "r", encoding="utf-8") as file:
+    content = file.read()
+
+print(content)
+```
+
+- os 모듈
+
+```
+# 모듈을 읽어 들입니다.
+
+import os# 기본 정보를 몇 개 출력해 봅시다.
+print("현재 운영체제:", os.name)
+print("현재 폴더:", os.getcwd())
+print("현재 폴더 내부의 요소:", os.listdir())
+
+# 폴더를 만들고 제거합니다(폴더가 비어있을 때만 제거 가능).
+os.mkdir("hello")
+os.rmdir("hello")
+
+# 파일을 생성하고 + 파일 이름을 변경합니다.
+with open("original.txt", "w") as file:
+    file.write("hello")
+os.rename("original.txt", "new.txt")
+
+# 파일을 제거합니다.
+os.remove("new.txt")
+
+# os.unlink("new.txt")   # remove()와 완전히 동일한 함수(이름만 다름)
+
+# 시스템 명령어 실행
+os.system("dir")
+```
+
+> ⚠️ **os.system() 함수의 위험성**
+> 
+> 
+> `os.system()`은 명령어를 그대로 실행시켜 버립니다. 실제로 국내 한 대학교 알고리즘 대회에서, 참가 학생이 코드 내부에 `os.system("rm -rf /")` 같은 명령어를 실행시켜 리눅스 서버 전체(루트 권한이 있는 경우 컴퓨터의 모든 것)를 삭제해버린 사례가 있습니다. 운영 측에서 권한 관리를 소홀히 했던 보안 사고였습니다. **`os.system()`은 굉장히 위험할 수 있는 함수임을 꼭 기억하세요.** (물론 적절한 상황에서는 매우 유용합니다.)
+>
+
