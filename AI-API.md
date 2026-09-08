@@ -1019,6 +1019,7 @@ output_b = filter(lambda x: x<3, list_input_a)
     - open(파일의 경로, mode)
         - mode: w,a,r
     - close()
+    - with 키워드: 파일의 열고 닫지 않는 실수를 방지하기 위한 태그
 
 ```python
 file = open("basic.txt","w",encoding="utf-8")
