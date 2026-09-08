@@ -697,7 +697,7 @@ def get_input(prompt, value):
 
 ### 표준 모듈
 
-- math 모듈
+- math 모듈 — 수학 관련 기능
 
 **math 모듈의 주요 함수**
 |변수/함수|설명|
@@ -730,7 +730,7 @@ from math import *
 import 모듈 as 사용하고싶은식별자
 ```
 
-- random 모듈
+- random 모듈 — 랜덤 값 생성
 
 ```
 import random
@@ -764,7 +764,7 @@ print("- sample([1, 2, 3, 4, 5], k=2):", random.sample([1, 2, 3, 4, 5], k=2))
 
 *파이썬의 import 구문은 가장 먼저 현재 폴더에서 같은 이름의 파일을 찾습니다. ```random.py```로 저장하면 진짜 random 모듈이 아니라 자기 자신을 불러와 버려서 오류가 발생합니다.*
 
-- sys 모듈
+- sys 모듈 — 시스템 관련 정보
 
 ```
 # 모듈을 읽어 들입니다.
@@ -795,7 +795,7 @@ with open(file_path, "r", encoding="utf-8") as file:
 print(content)
 ```
 
-- os 모듈
+- os 모듈 — 운영체제 관련 기능
 
 ```
 # 모듈을 읽어 들입니다.
@@ -829,7 +829,7 @@ os.system("dir")
 > `os.system()`은 명령어를 그대로 실행시켜 버립니다. 실제로 국내 한 대학교 알고리즘 대회에서, 참가 학생이 코드 내부에 `os.system("rm -rf /")` 같은 명령어를 실행시켜 리눅스 서버 전체(루트 권한이 있는 경우 컴퓨터의 모든 것)를 삭제해버린 사례가 있습니다. 운영 측에서 권한 관리를 소홀히 했던 보안 사고였습니다. **`os.system()`은 굉장히 위험할 수 있는 함수임을 꼭 기억하세요.** (물론 적절한 상황에서는 매우 유용합니다.)
 >
 
-- datetime
+- datetime 모듈 — 날짜와 시간 다루기
 
 ```
 # 모듈을 읽어 들입니다.
@@ -875,7 +875,7 @@ print(output.strftime("%Y{} %m{}%d{} %H{} %M{} %S{}").format(*"년월일시분�
 >💡 ```timedelta()```는 주/일/시/분/초 단위 계산은 되지만, "몇 년 후"를 직접 구하는 기능은 없습니다. 그래서 연도를 바꿀 땐 ```replace()```로 날짜 값 자체를 교체하는 게 일반적입니다.
 >
 
-- time 모듈
+- time 모듈 — 시간 정지 등
 
 ```
 import time
@@ -884,7 +884,7 @@ time.sleep(5)
 print("프로그램을 종료합니다")
 ```
 
-- urllib 모듈
+- urllib 모듈 — URL 다루기
 
 URL = Uniform Resource Locator, 네트워크 자원의 위치
 
@@ -963,8 +963,66 @@ for i, value in enumerate([1,2,3,4,5,6]):
     print(f"{}번째 요소는 {}입니다.".format(i,value))
 ```
 
-
 - 람다: 매개변수로 함수를 전달하기 위해 함수 구문을 작성하는 것이 번거롭고, 코드 낭비라 생각이 들 때 함수를 간단하고 쉽게 선언하는 방법. `()->{}` 1회용 함수를 만들 때 사용한다.
 
+```python
+def call_10_times(func):    #콜백 함수
+    for i in range(10):
+        func()
 
+def print_hello():
+    print("hello!")
 
+call_10_times(print_hello)
+
+call_10_times(lambda : print("hello!"))
+```
+
+**함수를 매개변수로 사용하는 대표적인 표준 함수**
+- `filter(함수, 반복할데이터)`: 원소마다 함수를 적용해 바꾼다.
+- `map(조건함수, 반복할데이터)`: 조건이 참인 원소만 남긴다.
+
+```python
+def power(item):
+    return item*item
+def under_3(item):
+    return item<3
+    
+list_input_a = [1,2,3,4,5]
+
+output_a = map(power,list_input_a)
+print(output_a)
+print(list(output_a))
+output_b = filter(under_3,list_input_a)
+print(output_b) #제너레이터
+print(list(output_b))
+
+power = lambda x: x*x
+under_3 = lambda x: x<3
+output_a = map(power, list_input_a)
+output_b = filter(under_3, list_input_a)
+print(list(output_a))
+print(list(output_b))
+
+output_a = map(lambda x: x*x, list_input_a)
+output_b = filter(lambda x: x<3, list_input_a)
+```
+
+---
+
+파일처리
+- 텍스트 파일
+- 바이너리 파일
+
+파일을 처리하려면
+1. 파일을 열기 (open) &rightarrow; 파일 읽기, 파일 쓰기
+    - open(파일의 경로, mode)
+        - mode: w,a,r
+    - close()
+
+```python
+file = open("basic.txt","w",encoding="utf-8")
+
+file.write("파이썬 파일 처리 예제 작성중...")
+file.close()
+```
