@@ -829,3 +829,115 @@ os.system("dir")
 > `os.system()`은 명령어를 그대로 실행시켜 버립니다. 실제로 국내 한 대학교 알고리즘 대회에서, 참가 학생이 코드 내부에 `os.system("rm -rf /")` 같은 명령어를 실행시켜 리눅스 서버 전체(루트 권한이 있는 경우 컴퓨터의 모든 것)를 삭제해버린 사례가 있습니다. 운영 측에서 권한 관리를 소홀히 했던 보안 사고였습니다. **`os.system()`은 굉장히 위험할 수 있는 함수임을 꼭 기억하세요.** (물론 적절한 상황에서는 매우 유용합니다.)
 >
 
+- datetime
+
+```
+# 모듈을 읽어 들입니다.
+import datetime
+# 현재 시각을 구하고 출력하기
+print("# 현재 시각 출력하기")
+now = datetime.datetime.now()
+print(now.year, "년")
+print(now.month, "월")
+print(now.day, "일")
+print(now.hour, "시")
+print(now.minute, "분")
+print(now.second, "초")
+print()# 시간 출력 방법
+
+print("# 시간을 포맷에 맞춰 출력하기")
+output_a = now.strftime("%Y.%m.%d %H:%M:%S")
+output_b = "{}년{}월{}일{}시{}분{}초".format(    now.year,    now.month,    now.day,    now.hour,    now.minute,    now.second)
+
+output_c = now.strftime("%Y{} %m{}%d{} %H{} %M{} %S{}").format(*"년월일시분초")
+print(output_a)
+print(output_b)
+print(output_c)
+```
+
+>💡 ```strftime()```은 시간을 원하는 형식으로 출력할 수 있지만, 매개변수에 한글 같은 문자는 직접 넣을 수 없습니다. 그래서 ```output_b```, ```output_c```처럼 문자열/리스트 앞에 ```*```를 붙여 각 요소를 매개변수로 풀어 넣는 방식을 활용합니다.
+>
+
+```
+# 모듈을 읽어 들입니다.
+import datetimenow = datetime.datetime.now()
+
+# 특정 시간 이후의 시간 구하기
+print("# datetime.timedelta로 시간 더하기")
+after = now + datetime.timedelta(    weeks=1,    days=1,    hours=1,    minutes=1,    seconds=1)
+print(after.strftime("%Y{} %m{}%d{} %H{} %M{} %S{}").format(*"년월일시분초"))
+print()# 특정 시간 요소 교체하기
+print("# now.replace()로 1년 더하기")
+output = now.replace(year=(now.year + 1))
+print(output.strftime("%Y{} %m{}%d{} %H{} %M{} %S{}").format(*"년월일시분초"))
+```
+
+>💡 ```timedelta()```는 주/일/시/분/초 단위 계산은 되지만, "몇 년 후"를 직접 구하는 기능은 없습니다. 그래서 연도를 바꿀 땐 ```replace()```로 날짜 값 자체를 교체하는 게 일반적입니다.
+>
+
+- time 모듈
+
+```
+import time
+print("지금부터 5초 동안 정지합니다!")
+time.sleep(5)
+print("프로그램을 종료합니다")
+```
+
+- urllib 모듈
+
+URL = Uniform Resource Locator, 네트워크 자원의 위치
+
+```
+# 모듈을 읽어 들입니다.
+from urllib import request
+
+# urlopen() 함수로 구글의 메인 페이지를 읽습니다.
+target = request.urlopen("https://google.com")
+output = target.read()# 출력합니다.
+print(output)
+```
+
+**실행 결과 (일부):**
+
+```
+b'<!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="ko">...생략...
+```
+
+> 💡 결과 앞에 `b`가 붙어있는데, 이는 **바이너리 데이터(binary data)** 를 의미합니다. `urlopen()`으로 페이지를 열고 `read()`로 내용을 읽어오는 흐름을 기억해두세요.
+>
+
+- operator
+
+#### 📌 문제 상황: 콜백 함수 vs 람다
+
+딕셔너리 리스트에서 최솟값/최댓값을 구할 때 콜백 함수나 람다를 쓰면 가독성 문제가 생길 수 있습니다.
+
+```python
+books = [{    "제목": "파이썬 프로그래밍",    "가격": 18000}, {    "제목": "머신러닝 + 딥러닝",    "가격": 26000}, {    "제목": "자바스크립트 프로그래밍",    "가격": 24000}]
+
+def 가격추출함수(book):
+    return book["가격"]
+    min(books, key=가격추출함수)
+    min(books, key=lambda book: book["가격"])
+```
+
+- **콜백 함수 방식**: 코드를 읽다가 `가격추출함수`가 뭔지 확인하려면 함수 정의부까지 찾아가야 함
+- **람다 방식**: 람다 문법 자체를 모르는 개발자가 많아 코드 읽기가 어려울 수 있음
+
+#### ✅ 해결책: operator.itemgetter()
+
+```python
+from operator 
+import itemgetter   
+# operator 모듈의 itemgetter() 함수를 가져옵니다.
+books = [{    "제목": "파이썬 프로그래밍",    "가격": 18000}, {    "제목": "머신러닝 + 딥러닝",    "가격": 26000}, {    "제목": "자바스크립트 프로그래밍",    "가격": 24000}]
+
+print(min(books, key=itemgetter("가격")))
+print()print("# 가장 비싼 책")
+print(max(books, key=itemgetter("가격")))
+```
+
+> 💡 `itemgetter("가격")`은 "'가격' 키를 꺼내는 함수"를 즉석에서 만들어줍니다. 함수 이름만 봐도 무슨 역할인지 짐작할 수 있어 **람다보다 코드 가독성이 좋습니다.**
+>
+
