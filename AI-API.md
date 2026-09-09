@@ -1027,3 +1027,148 @@ file = open("basic.txt","w",encoding="utf-8")
 file.write("파이썬 파일 처리 예제 작성중...")
 file.close()
 ```
+
+---
+
+*복잡하고 구조화된 모듈을 만들 때는 **패키지(package)** 라는 기능을 사용한다.*
+
+---
+
+프로그래밍 언어에서는 프로그램의 진입점을 **엔트리 포인트(entry point)** 또는 메인(main)이라고 부릅니다. 그리고 이러한 엔트리 포인트 내부에서의 `__name__`은 `"__main__"`입니다.
+
+#### 모듈의 `__name__`
+
+엔트리 포인트가 아니지만 엔트리 포인트 파일 내에서 import 되었기 때문에 모듈 내 코드가 실행됩니다. 모듈 내부에서 `__name__`을 출력하면 모듈의 이름을 나타냅니다.
+
+> `module_main` 디렉터리를 생성해 파일을 저장합니다.
+> 
+
+**소스 코드: `module_main/main.py`**
+
+```python
+# main.py 파일
+import test_module
+
+print("# 메인의 __name__ 출력하기")
+print(__name__)
+print()
+```
+
+**소스 코드: `module_main/test_module.py`**
+
+```python
+# test_module.py 파일
+print("# 모듈의 __name__ 출력하기")
+print(__name__)
+print()
+```
+
+**실행 결과**
+
+```
+# 모듈의 __name__ 출력하기
+test_module
+
+# 메인의 __name__ 출력하기
+__main__
+```
+
+코드를 실행하면 엔트리 포인트 파일에서는 `"__main__"`을 출력하지만, 모듈 파일에서는 모듈 이름을 출력하는 것을 볼 수 있습니다.
+
+#### `__name__` 활용하기
+
+엔트리 포인트 파일 내부에서는 `__name__`이 `"__main__"`이라는 값을 갖습니다. 이를 활용하면 현재 파일이 모듈로 실행되는지, 엔트리 포인트로 실행되는지 확인할 수 있습니다.
+
+예를 들어 다음 코드를 살펴보겠습니다.
+
+ `test_module.py`라는 이름으로 프로그램을 만들었습니다. 그리고 '이러한 형태로 활용한다'는 것을 보여주기 위해 간단한 출력도 넣었습니다.
+
+> `module_example` 디렉터리를 생성해 파일을 저장합니다.
+> 
+
+**소스 코드: `module_example/test_module.py`**
+
+```python
+PI = 3.141592
+
+def number_input():
+    output = input("숫자 입력> ")
+    return float(output)
+
+def get_circumference(radius):
+    return 2 * PI * radius
+
+def get_circle_area(radius):
+    return PI * radius * radius
+
+# 활용 예 (이런 식으로 동작해요! 를 알려주는 용도)
+print("get_circumference(10):", get_circumference(10))
+print("get_circle_area(10): ", get_circle_area(10))
+```
+
+**소스 코드: `module_example/main.py`**
+
+```python
+import test_module as test  # 위 모듈을 읽어 들입니다.
+
+radius = test.number_input()
+print(test.get_circumference(radius))
+print(test.get_circle_area(radius))
+```
+
+**실행 결과**
+
+```
+get_circumference(10): 62.83184     # 모듈에서 활용 예로 사용했던 코드까지 출력됨
+get_circle_area(10):  314.1592
+숫자 입력> 10 (Enter)
+62.83184
+314.1592
+```
+
+그런데 현재 `test_module.py`라는 파일에는 '이런 식으로 동작해요!'라는 설명을 위해 추가한 활용 예시 부분이 있습니다. 모듈로 사용하고 있는데, 내부에서 출력이 발생하니 문제가 됩니다.
+
+이때 현재 파일이 엔트리 포인트인지 구분하는 코드를 활용합니다. 조건문으로 `__name__`이 `"__main__"`인지 확인만 하면 됩니다.
+
+**소스 코드: `module_example/test_module.py` (엔트리 포인트를 확인하는 버전)**
+
+```python
+PI = 3.141592
+
+def number_input():
+    output = input("숫자 입력> ")
+    return float(output)
+
+def get_circumference(radius):
+    return 2 * PI * radius
+
+def get_circle_area(radius):
+    return PI * radius * radius
+
+# 활용 예: 현재 파일이 엔트리 포인트인지 확인하고,
+# 엔트리 포인트일 때만 실행됩니다.
+if __name__ == "__main__":
+    print("get_circumference(10):", get_circumference(10))
+    print("get_circle_area(10): ", get_circle_area(10))
+```
+
+**소스 코드: `module_example/main.py`**
+
+```python
+import test_module as test
+
+radius = test.number_input()
+print(test.get_circumference(radius))
+print(test.get_circle_area(radius))
+```
+
+**실행 결과**
+
+```
+숫자 입력> 10 (Enter)
+62.83184
+314.1592
+```
+
+---
+
