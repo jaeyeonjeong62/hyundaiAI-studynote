@@ -115,7 +115,7 @@ AI 모델로부터 원하는 결과를 효과적으로 이끌어내기 위해 �
 |---|---|
 |통계 기반 모델 시대|Hidden Markov Model(HMM)(1980년대 NLP 적용)|
 |신경망 기반 모델 등장|Word2Vec(2013), GloVe(단어 임베딩 혁명,2014)|
-|순환 신경망 시대|RNN(Recurrent Neural Network, 1980년대), LSTM(Long Short-Term Memory, 1997), Seq2Seq(Sequence-to-Sequence, 2014)|
+|순환 신경망 시대|RNN(Recurrent Neural Network, 1980년대), LSTM(Long Short-Term Memory, 1997), <br>Seq2Seq(Sequence-to-Sequence, 2014)|
 |어텐션 메커니즘 도입|Attention Mechanism(2014~2015), Transformer(2017)|
 |사전학습 언어모델 시대|BERT(2019), GPT 시리즈(2018~현재)|
 
