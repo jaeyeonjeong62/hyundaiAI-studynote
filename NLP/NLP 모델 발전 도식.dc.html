@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-fcae6545-bc29-4b2b-afc8-df4f91ed8a5c/styles.css">
+<script src="_ds/modernist-fcae6545-bc29-4b2b-afc8-df4f91ed8a5c/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #f3f2f2; }
+  * { text-wrap: pretty; }
+  a { color: var(--color-accent-700); text-decoration: underline; }
+  a:hover { color: var(--color-accent); }
+</style>
+</helmet>
+
+<div style="font-family: 'Archivo', 'Noto Sans KR', sans-serif; color: var(--color-text); background: var(--color-bg); padding: 40px 28px 64px; max-width: 1240px; margin: 0 auto; line-height: 1.5;">
+
+  <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-accent-700);">교육용 도식 / 인터랙티브</div>
+  <h1 style="font-family: 'Archivo', 'Noto Sans KR', sans-serif; font-size: clamp(30px, 5vw, 52px); font-weight: 900; line-height: 1.04; letter-spacing: -0.02em; margin: 10px 0 14px;">RNN에서 GPT까지<br>발전 과정과 계산 원리</h1>
+  <p style="max-width: 60ch; font-size: 15px; margin: 0 0 18px;">왼쪽 발전도에서 단계를 누르면 오른쪽에 그 단계의 확대도가 나타납니다. 모든 단계는 같은 예시 문장으로 설명합니다.</p>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 22px;">
+    <span style="border: 2px solid var(--color-text); background: #fff; padding: 6px 10px;">입력 &nbsp;I love this movie</span>
+    <span style="font-size: 18px;">→</span>
+    <span style="border: 2px solid var(--color-accent); background: #fff; padding: 6px 10px; color: var(--color-accent-700);">출력 &nbsp;나는 이 영화를 좋아한다</span>
+  </div>
+
+  <div style="border-top: 2px solid var(--color-divider); border-bottom: 2px solid var(--color-divider); padding: 14px 0; margin-bottom: 12px;">
+    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 10px;">시각 요소 약속 — 모든 단계에서 같은 의미</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; align-items: center;">
+      <span style="display: flex; gap: 7px; align-items: center;"><span style="border: 2px solid var(--color-text); background: #fff; padding: 3px 8px; font-weight: 700;">Encoder</span>검은 테두리 = 입력 이해</span>
+      <span style="display: flex; gap: 7px; align-items: center;"><span style="border: 2px solid var(--color-accent); background: #fff; padding: 3px 8px; font-weight: 700; color: var(--color-accent-700);">Decoder</span>빨간 테두리 = 출력 생성</span>
+      <span style="display: flex; gap: 7px; align-items: center;"><span style="background: var(--color-text); color: var(--color-bg); padding: 3px 8px; font-weight: 700;">h</span>hidden state</span>
+      <span style="display: flex; gap: 7px; align-items: center;"><span style="border: 2px dashed var(--color-text); padding: 2px 8px; font-weight: 700;">c</span>cell state</span>
+      <span style="display: flex; gap: 7px; align-items: center;"><span style="background: var(--color-accent); color: #fff; padding: 3px 8px; font-weight: 700;">ctx</span>context vector</span>
+      <span style="display: flex; gap: 7px; align-items: center;"><span style="border-bottom: 2px dotted var(--color-accent); font-weight: 700; padding: 0 6px;">0.83</span>attention weight</span>
+      <span style="display: flex; gap: 7px; align-items: center;"><span style="border: 2px solid var(--color-text); background: var(--color-neutral-200); padding: 3px 8px; font-weight: 700;">Q K V</span>투영 행렬</span>
+      <span style="display: flex; gap: 7px; align-items: center;"><span style="display: inline-flex; gap: 2px; align-items: flex-end; height: 14px;"><span style="width: 5px; height: 14px; background: var(--color-text);"></span><span style="width: 5px; height: 8px; background: var(--color-neutral-500);"></span><span style="width: 5px; height: 4px; background: var(--color-neutral-400);"></span></span>logits / 확률</span>
+    </div>
+  </div>
+
+  <div style="border-bottom: 2px solid var(--color-divider); padding: 12px 0 14px; margin-bottom: 26px; font-size: 12px;">
+    <span style="font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700);">공통 전제</span>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 9px; font-weight: 700;">
+      <span style="border: 2px solid var(--color-neutral-400); background: #fff; padding: 4px 9px;">토큰 &nbsp;영화를</span>
+      <span>→</span>
+      <span style="border: 2px solid var(--color-neutral-400); background: #fff; padding: 4px 9px;">토큰 ID &nbsp;4217</span>
+      <span>→</span>
+      <span style="border: 2px solid var(--color-neutral-400); background: #fff; padding: 4px 9px;">embedding matrix 조회</span>
+      <span>→</span>
+      <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 9px;">E(영화를) ∈ ℝ⁵¹²</span>
+      <span style="font-weight: 400; color: var(--color-neutral-700);">모든 모델의 입구는 동일합니다. embedding matrix는 모델과 함께 학습됩니다.</span>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 34px; align-items: flex-start;">
+
+    <div style="flex: 1 1 300px; min-width: 280px;">
+      <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 12px;">전체 발전도</div>
+
+      <button onClick="{{ go.rnn }}" style="position: relative; display: block; width: 100%; text-align: left; border: 2px solid var(--color-text); background: #fff; padding: 12px 14px; cursor: pointer; font-family: inherit; color: inherit;" style-hover="background: var(--color-neutral-100);">
+        <sc-if value="{{ sel.rnn }}" hint-placeholder-val="{{ true }}">
+          <span style="position: absolute; inset: 0; background: var(--color-neutral-200);"></span>
+          <span style="position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--color-accent);"></span>
+        </sc-if>
+        <span style="position: relative; display: block;">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+            <span style="font-size: 19px; font-weight: 900;">01 &nbsp;RNN</span>
+            <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--color-neutral-500); padding: 1px 6px;">계산 부품 · 셀</span>
+          </span>
+          <span style="display: block; font-size: 13px; margin-top: 5px;">이전 hidden state를 다음 시점으로 전달</span>
+        </span>
+      </button>
+      <div style="padding: 9px 0 9px 14px; font-size: 12px; color: var(--color-accent-700); font-weight: 700;">↓ 남은 문제 · 긴 문장에서 앞 정보가 사라진다</div>
+
+      <button onClick="{{ go.lstm }}" style="position: relative; display: block; width: 100%; text-align: left; border: 2px solid var(--color-text); background: #fff; padding: 12px 14px; cursor: pointer; font-family: inherit; color: inherit;" style-hover="background: var(--color-neutral-100);">
+        <sc-if value="{{ sel.lstm }}" hint-placeholder-val="{{ false }}">
+          <span style="position: absolute; inset: 0; background: var(--color-neutral-200);"></span>
+          <span style="position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--color-accent);"></span>
+        </sc-if>
+        <span style="position: relative; display: block;">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+            <span style="font-size: 19px; font-weight: 900;">02 &nbsp;LSTM</span>
+            <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--color-neutral-500); padding: 1px 6px;">계산 부품 · 셀</span>
+          </span>
+          <span style="display: block; font-size: 13px; margin-top: 5px;">cell state와 gate를 더해 장기 기억을 유지</span>
+        </span>
+      </button>
+      <div style="padding: 9px 0 9px 14px; font-size: 12px; color: var(--color-accent-700); font-weight: 700;">↓ 남은 문제 · 입력과 출력의 길이가 다른 작업을 담을 그릇이 없다</div>
+
+      <button onClick="{{ go.seq2seq }}" style="position: relative; display: block; width: 100%; text-align: left; border: 2px solid var(--color-text); background: #fff; padding: 12px 14px; cursor: pointer; font-family: inherit; color: inherit;" style-hover="background: var(--color-neutral-100);">
+        <sc-if value="{{ sel.seq2seq }}" hint-placeholder-val="{{ false }}">
+          <span style="position: absolute; inset: 0; background: var(--color-neutral-200);"></span>
+          <span style="position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--color-accent);"></span>
+        </sc-if>
+        <span style="position: relative; display: block;">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+            <span style="font-size: 19px; font-weight: 900;">03 &nbsp;Seq2Seq</span>
+            <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--color-neutral-500); padding: 1px 6px;">구성 방식</span>
+          </span>
+          <span style="display: block; font-size: 13px; margin-top: 5px;">같은 LSTM 계산을 Encoder와 Decoder 두 역할로 나눔</span>
+        </span>
+      </button>
+      <div style="padding: 9px 0 9px 14px; font-size: 12px; color: var(--color-accent-700); font-weight: 700;">↓ 남은 문제 · 문장 전체를 고정 길이 벡터 하나에 압축해야 한다</div>
+
+      <button onClick="{{ go.attn }}" style="position: relative; display: block; width: 100%; text-align: left; border: 2px solid var(--color-text); background: #fff; padding: 12px 14px; cursor: pointer; font-family: inherit; color: inherit;" style-hover="background: var(--color-neutral-100);">
+        <sc-if value="{{ sel.attn }}" hint-placeholder-val="{{ false }}">
+          <span style="position: absolute; inset: 0; background: var(--color-neutral-200);"></span>
+          <span style="position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--color-accent);"></span>
+        </sc-if>
+        <span style="position: relative; display: block;">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+            <span style="font-size: 19px; font-weight: 900;">04 &nbsp;Attention</span>
+            <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--color-neutral-500); padding: 1px 6px;">계산 장치</span>
+          </span>
+          <span style="display: block; font-size: 13px; margin-top: 5px;">고정 벡터 대신 입력 전체를 매 시점 가중 탐색</span>
+        </span>
+      </button>
+      <div style="padding: 9px 0 9px 14px; font-size: 12px; color: var(--color-accent-700); font-weight: 700;">↓ 남은 문제 · RNN이 남아 있어 토큰을 순서대로만 처리할 수 있다</div>
+
+      <button onClick="{{ go.tf }}" style="position: relative; display: block; width: 100%; text-align: left; border: 2px solid var(--color-text); background: #fff; padding: 12px 14px; cursor: pointer; font-family: inherit; color: inherit;" style-hover="background: var(--color-neutral-100);">
+        <sc-if value="{{ sel.tf }}" hint-placeholder-val="{{ false }}">
+          <span style="position: absolute; inset: 0; background: var(--color-neutral-200);"></span>
+          <span style="position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--color-accent);"></span>
+        </sc-if>
+        <span style="position: relative; display: block;">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+            <span style="font-size: 19px; font-weight: 900;">05 &nbsp;Transformer</span>
+            <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--color-neutral-500); padding: 1px 6px;">모델 구조</span>
+          </span>
+          <span style="display: block; font-size: 13px; margin-top: 5px;">RNN을 제거하고 Q·K·V Self-Attention으로 대체</span>
+        </span>
+      </button>
+      <div style="padding: 9px 0 9px 14px; font-size: 12px; color: var(--color-accent-700); font-weight: 700;">↓ 분기 · 같은 블록을 어느 쪽으로 쌓을지에 따라 갈라진다</div>
+
+      <button onClick="{{ go.bertgpt }}" style="position: relative; display: block; width: 100%; text-align: left; border: 2px solid var(--color-text); background: #fff; padding: 12px 14px; cursor: pointer; font-family: inherit; color: inherit;" style-hover="background: var(--color-neutral-100);">
+        <sc-if value="{{ sel.bertgpt }}" hint-placeholder-val="{{ false }}">
+          <span style="position: absolute; inset: 0; background: var(--color-neutral-200);"></span>
+          <span style="position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--color-accent);"></span>
+        </sc-if>
+        <span style="position: relative; display: block;">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+            <span style="font-size: 19px; font-weight: 900;">06 &nbsp;BERT / GPT</span>
+            <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--color-neutral-500); padding: 1px 6px;">계열 분화</span>
+          </span>
+          <span style="display: block; font-size: 13px; margin-top: 5px;">이해 중심 Encoder 계열, 생성 중심 Causal Decoder 계열</span>
+        </span>
+      </button>
+
+      <div style="border: 2px solid var(--color-divider); background: #fff; padding: 12px 14px; margin-top: 22px; font-size: 12px;">
+        <span style="font-weight: 900;">한 줄 요약</span><br>
+        순차 전달 구조가 장기 기억을 얻고, Encoder–Decoder로 확장되고, Attention으로 입력을 다시 참고하게 된 뒤, RNN을 버리고 토큰 사이 관계를 직접 계산하는 Transformer가 되었으며, 여기서 BERT와 GPT가 갈라졌습니다.
+      </div>
+    </div>
+
+    <div style="flex: 2.4 1 460px; min-width: 320px;">
+      <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 12px;">단계별 확대도</div>
+
+      <sc-if value="{{ sel.rnn }}" hint-placeholder-val="{{ true }}">
+        <div style="border: 2px solid var(--color-text); background: #fff; padding: 22px;">
+          <h2 style="font-size: 28px; font-weight: 900; margin: 0 0 4px; letter-spacing: -0.01em;">01 &nbsp;RNN</h2>
+          <p style="font-size: 13px; margin: 0 0 20px; color: var(--color-neutral-800);">Elman, Finding Structure in Time (1990) · 하나의 셀을 시점마다 반복 사용합니다.</p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: stretch; margin-bottom: 22px;">
+            <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+              <span style="border: 2px solid var(--color-neutral-400); padding: 4px 9px; font-size: 12px; font-weight: 700;">나는</span>
+              <span style="font-size: 15px;">↓</span>
+              <span style="border: 2px solid var(--color-text); background: #fff; padding: 10px 12px; font-size: 13px; font-weight: 900;">RNN</span>
+              <span style="font-size: 15px;">↓</span>
+              <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 9px; font-size: 12px; font-weight: 700;">h₁</span>
+            </div>
+            <div style="align-self: center; font-size: 12px; font-weight: 700; padding: 0 6px; color: var(--color-accent-700);">h₁ →</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+              <span style="border: 2px solid var(--color-neutral-400); padding: 4px 9px; font-size: 12px; font-weight: 700;">영화를</span>
+              <span style="font-size: 15px;">↓</span>
+              <span style="border: 2px solid var(--color-text); background: #fff; padding: 10px 12px; font-size: 13px; font-weight: 900;">RNN</span>
+              <span style="font-size: 15px;">↓</span>
+              <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 9px; font-size: 12px; font-weight: 700;">h₂</span>
+            </div>
+            <div style="align-self: center; font-size: 12px; font-weight: 700; padding: 0 6px; color: var(--color-accent-700);">h₂ →</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+              <span style="border: 2px solid var(--color-neutral-400); padding: 4px 9px; font-size: 12px; font-weight: 700;">좋아한다</span>
+              <span style="font-size: 15px;">↓</span>
+              <span style="border: 2px solid var(--color-text); background: #fff; padding: 10px 12px; font-size: 13px; font-weight: 900;">RNN</span>
+              <span style="font-size: 15px;">↓</span>
+              <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 9px; font-size: 12px; font-weight: 700;">h₃</span>
+            </div>
+            <div style="align-self: center; font-size: 12px; padding-left: 10px; max-width: 22ch; color: var(--color-neutral-700);">같은 셀, 같은 파라미터를 매 시점 다시 사용합니다.</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; border-top: 2px solid var(--color-divider);">
+            <div style="border-bottom: 2px solid var(--color-divider); padding: 14px 16px 14px 0;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px;">입력 / 출력</div>
+              <div style="font-size: 13px;">입력: 토큰 임베딩 xₜ 하나씩<br>출력: 시점별 hidden state hₜ</div>
+            </div>
+            <div style="border-bottom: 2px solid var(--color-divider); padding: 14px 16px 14px 0;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px;">내부 상태</div>
+              <div style="font-size: 13px;">hidden state hₜ 하나. 지금까지 읽은 내용을 담은 유일한 기억입니다.</div>
+            </div>
+          </div>
+
+          <sc-if value="{{ showMath }}" hint-placeholder-val="{{ true }}">
+            <div style="background: var(--color-surface); border: 2px solid var(--color-divider); padding: 14px 16px; margin-top: 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.9;">
+              hₜ = tanh( W_x·xₜ + W_h·hₜ₋₁ + b )<br>
+              yₜ = softmax( W_o·hₜ )
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showNumbers }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top: 16px; font-size: 13px;">
+              <span style="font-weight: 900;">작은 예시</span> · h₁ = [0.4, −0.2] 에 “영화를”이 들어오면 h₂ = tanh(W_x·x₂ + W_h·[0.4, −0.2]) = [0.7, 0.1]. 새 입력과 이전 기억이 한 번의 tanh로 섞입니다.
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showDelta }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 20px;">
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">유지</div><div style="font-size: 13px; margin-top: 4px;">토큰 임베딩 입력</div></div>
+              <div style="border: 2px solid var(--color-accent); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-700);">추가</div><div style="font-size: 13px; margin-top: 4px;">순환 연결 hₜ₋₁ → hₜ</div></div>
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">제거</div><div style="font-size: 13px; margin-top: 4px;">없음 (출발점)</div></div>
+            </div>
+          </sc-if>
+
+          <div style="border-top: 2px solid var(--color-text); margin-top: 22px; padding-top: 14px;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 6px;">다음 모델이 해결한 한계</div>
+            <div style="font-size: 14px;">기억이 hₜ 하나라서 매 시점 덮어쓰입니다. 문장이 길어지면 역전파 과정에서 기울기가 소실되어 앞부분 정보가 사라집니다. → LSTM이 별도의 기억 통로를 만듭니다.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sel.lstm }}" hint-placeholder-val="{{ false }}">
+        <div style="border: 2px solid var(--color-text); background: #fff; padding: 22px;">
+          <h2 style="font-size: 28px; font-weight: 900; margin: 0 0 4px; letter-spacing: -0.01em;">02 &nbsp;LSTM</h2>
+          <p style="font-size: 13px; margin: 0 0 20px; color: var(--color-neutral-800);">Hochreiter &amp; Schmidhuber, Long Short-Term Memory (1997) · RNN의 hidden state 계산만 바꾼 셀입니다.</p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 22px;">
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700;">
+              <span style="border: 2px dashed var(--color-text); padding: 3px 8px;">cₜ₋₁</span>
+              <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 9px;">hₜ₋₁</span>
+              <span style="border: 2px solid var(--color-neutral-400); padding: 4px 9px;">xₜ 영화를</span>
+            </div>
+            <span style="font-size: 18px;">→</span>
+            <div style="border: 2px solid var(--color-text); padding: 14px; background: #fff;">
+              <div style="font-size: 12px; font-weight: 900; margin-bottom: 10px;">LSTM CELL</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; font-weight: 700;">
+                <span style="border: 2px solid var(--color-neutral-500); padding: 4px 8px;">forget f = 0.9</span>
+                <span style="border: 2px solid var(--color-neutral-500); padding: 4px 8px;">input i = 0.2</span>
+                <span style="border: 2px solid var(--color-neutral-500); padding: 4px 8px;">output o = 0.7</span>
+              </div>
+              <div style="font-size: 12px; margin-top: 10px; color: var(--color-neutral-800);">f가 1에 가까우면 옛 기억을 그대로 통과시킵니다. 이 곱셈 경로가 기울기 소실을 완화합니다.</div>
+            </div>
+            <span style="font-size: 18px;">→</span>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700;">
+              <span style="border: 2px dashed var(--color-text); padding: 3px 8px;">cₜ</span>
+              <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 9px;">hₜ</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; border-top: 2px solid var(--color-divider);">
+            <div style="border-bottom: 2px solid var(--color-divider); padding: 14px 16px 14px 0;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px;">입력 / 출력</div>
+              <div style="font-size: 13px;">입력: xₜ, hₜ₋₁, cₜ₋₁<br>출력: hₜ, cₜ</div>
+            </div>
+            <div style="border-bottom: 2px solid var(--color-divider); padding: 14px 16px 14px 0;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px;">내부 상태</div>
+              <div style="font-size: 13px;">기억 통로 cₜ(점선)와 밖으로 내보내는 hₜ(검은 채움), 두 갈래로 분리됩니다.</div>
+            </div>
+          </div>
+
+          <sc-if value="{{ showMath }}" hint-placeholder-val="{{ true }}">
+            <div style="background: var(--color-surface); border: 2px solid var(--color-divider); padding: 14px 16px; margin-top: 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.9;">
+              f, i, o = σ( W·[hₜ₋₁, xₜ] + b )<br>
+              g̃ = tanh( W_g·[hₜ₋₁, xₜ] + b_g )<br>
+              cₜ = f ⊙ cₜ₋₁ + i ⊙ g̃<br>
+              hₜ = o ⊙ tanh( cₜ )
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showNumbers }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top: 16px; font-size: 13px;">
+              <span style="font-weight: 900;">작은 예시</span> · cₜ₋₁ = 1.0 에서 f = 0.9, i = 0.2, g̃ = 0.5 이면 cₜ = 0.9×1.0 + 0.2×0.5 = 0.95. 옛 기억의 대부분이 살아남습니다.
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showDelta }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 20px;">
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">유지</div><div style="font-size: 13px; margin-top: 4px;">순차 처리, hₜ 전달 방식</div></div>
+              <div style="border: 2px solid var(--color-accent); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-700);">추가</div><div style="font-size: 13px; margin-top: 4px;">cell state, forget·input·output gate</div></div>
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">제거</div><div style="font-size: 13px; margin-top: 4px;">단일 tanh 갱신</div></div>
+            </div>
+          </sc-if>
+
+          <div style="border-top: 2px solid var(--color-text); margin-top: 22px; padding-top: 14px;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 6px;">다음 모델이 해결한 한계</div>
+            <div style="font-size: 14px;">LSTM은 셀일 뿐이어서, 입력 4토큰을 읽고 출력 5토큰을 만드는 번역처럼 길이가 다른 작업을 담을 구조가 없습니다. → Seq2Seq가 역할을 둘로 나눕니다.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sel.seq2seq }}" hint-placeholder-val="{{ false }}">
+        <div style="border: 2px solid var(--color-text); background: #fff; padding: 22px;">
+          <h2 style="font-size: 28px; font-weight: 900; margin: 0 0 4px; letter-spacing: -0.01em;">03 &nbsp;Seq2Seq</h2>
+          <p style="font-size: 13px; margin: 0 0 20px; color: var(--color-neutral-800);">Sutskever, Vinyals, Le (2014) Figure 1 · Encoder와 Decoder는 신경망의 이름이 아니라 역할의 이름입니다. 같은 LSTM 계산식을 쓰지만 파라미터는 서로 다릅니다(θ_E ≠ θ_D).</p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; margin-bottom: 20px;">
+            <div style="border: 2px solid var(--color-text); padding: 14px; flex: 1 1 240px;">
+              <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Encoder</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center; font-size: 12px; font-weight: 700;">
+                <span style="border: 2px solid var(--color-neutral-400); padding: 3px 7px;">I</span>
+                <span style="background: var(--color-text); color: var(--color-bg); padding: 3px 7px;">h₁</span>
+                <span>→</span>
+                <span style="border: 2px solid var(--color-neutral-400); padding: 3px 7px;">love</span>
+                <span style="background: var(--color-text); color: var(--color-bg); padding: 3px 7px;">h₂</span>
+                <span>→</span>
+                <span style="border: 2px solid var(--color-neutral-400); padding: 3px 7px;">this</span>
+                <span style="background: var(--color-text); color: var(--color-bg); padding: 3px 7px;">h₃</span>
+                <span>→</span>
+                <span style="border: 2px solid var(--color-neutral-400); padding: 3px 7px;">movie</span>
+                <span style="background: var(--color-text); color: var(--color-bg); padding: 3px 7px;">h₄</span>
+              </div>
+              <div style="font-size: 12px; margin-top: 10px; color: var(--color-neutral-800);">h₁–h₃은 버리고 마지막 h₄만 넘깁니다.</div>
+            </div>
+            <div style="align-self: center; text-align: center; flex: 0 0 auto;">
+              <div style="background: var(--color-accent); color: #fff; padding: 8px 12px; font-size: 12px; font-weight: 900;">c = h₄<sup>enc</sup></div>
+              <div style="font-size: 11px; margin-top: 6px; max-width: 14ch; color: var(--color-accent-700); font-weight: 700;">고정 길이 context vector</div>
+            </div>
+            <div style="border: 2px solid var(--color-accent); padding: 14px; flex: 1 1 240px;">
+              <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; color: var(--color-accent-700);">Decoder</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center; font-size: 12px; font-weight: 700;">
+                <span style="border: 2px solid var(--color-accent); padding: 3px 7px;">&lt;BOS&gt;</span>
+                <span>→</span>
+                <span style="border: 2px solid var(--color-accent); padding: 3px 7px;">나는</span>
+                <span>→</span>
+                <span style="border: 2px solid var(--color-accent); padding: 3px 7px;">이</span>
+                <span>→</span>
+                <span style="border: 2px solid var(--color-accent); padding: 3px 7px;">영화를</span>
+                <span>→</span>
+                <span style="border: 2px solid var(--color-accent); padding: 3px 7px;">좋아한다</span>
+              </div>
+              <div style="font-size: 12px; margin-top: 10px; color: var(--color-neutral-800);">c를 s₀으로 받아 같은 셀을 반복 사용합니다. 시점마다 새 Decoder가 생기는 것이 아니라, 들어가는 이전 토큰과 상태만 바뀝니다.</div>
+            </div>
+          </div>
+
+          <div style="border: 2px solid var(--color-divider); padding: 14px 16px; margin-bottom: 18px;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 10px;">다음 토큰은 어휘 집합 전체의 확률에서 고릅니다</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; font-size: 12px; font-weight: 700;">
+              <span style="display: flex; flex-direction: column; align-items: center; gap: 5px;"><span style="width: 24px; height: 62px; background: var(--color-text);"></span>좋아한다 0.62</span>
+              <span style="display: flex; flex-direction: column; align-items: center; gap: 5px;"><span style="width: 24px; height: 21px; background: var(--color-neutral-500);"></span>싫어한다 0.21</span>
+              <span style="display: flex; flex-direction: column; align-items: center; gap: 5px;"><span style="width: 24px; height: 11px; background: var(--color-neutral-400);"></span>봤다 0.11</span>
+              <span style="display: flex; flex-direction: column; align-items: center; gap: 5px;"><span style="width: 24px; height: 6px; background: var(--color-neutral-300);"></span>기타 0.06</span>
+              <span style="font-weight: 400; max-width: 26ch; color: var(--color-neutral-700);">Linear layer가 어휘 크기만큼의 logits를 만들고, softmax 뒤 greedy·beam search 등으로 한 토큰을 고릅니다.</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; border-top: 2px solid var(--color-divider);">
+            <div style="border-bottom: 2px solid var(--color-divider); padding: 14px 16px 14px 0;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px;">입력 / 출력</div>
+              <div style="font-size: 13px;">입력: 원문 토큰 열<br>출력: 길이가 다를 수 있는 번역 토큰 열</div>
+            </div>
+            <div style="border-bottom: 2px solid var(--color-divider); padding: 14px 16px 14px 0;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px;">주요 텐서</div>
+              <div style="font-size: 13px;">context vector c(빨간 채움), Decoder 상태 sᵢ, 어휘 크기 logits zᵢ ∈ ℝ¹⁰⁰⁰⁰</div>
+            </div>
+          </div>
+
+          <sc-if value="{{ showMath }}" hint-placeholder-val="{{ true }}">
+            <div style="background: var(--color-surface); border: 2px solid var(--color-divider); padding: 14px 16px; margin-top: 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.9;">
+              c = h_T<sup>enc</sup><br>
+              sᵢ = LSTM_dec( E(yᵢ₋₁), sᵢ₋₁ ),&nbsp; s₀ = c<br>
+              zᵢ = W_o·sᵢ + b_o<br>
+              P(yᵢ | y&lt;ᵢ, x) = softmax(zᵢ)
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showDelta }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 20px;">
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">유지</div><div style="font-size: 13px; margin-top: 4px;">LSTM 셀 계산식 그대로</div></div>
+              <div style="border: 2px solid var(--color-accent); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-700);">추가</div><div style="font-size: 13px; margin-top: 4px;">Encoder·Decoder 역할 분리, 어휘 출력층</div></div>
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">제거</div><div style="font-size: 13px; margin-top: 4px;">입력·출력 길이가 같아야 한다는 제약</div></div>
+            </div>
+          </sc-if>
+
+          <div style="border-top: 2px solid var(--color-text); margin-top: 22px; padding-top: 14px;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 6px;">다음 모델이 해결한 한계</div>
+            <div style="font-size: 14px;">문장이 20토큰이든 100토큰이든 벡터 c 하나에 압축해야 합니다(고정 벡터 병목). → Attention이 Encoder의 모든 상태를 다시 열어 줍니다.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sel.attn }}" hint-placeholder-val="{{ false }}">
+        <div style="border: 2px solid var(--color-text); background: #fff; padding: 22px;">
+          <h2 style="font-size: 28px; font-weight: 900; margin: 0 0 4px; letter-spacing: -0.01em;">04 &nbsp;Attention (Bahdanau)</h2>
+          <p style="font-size: 13px; margin: 0 0 20px; color: var(--color-neutral-800);">Bahdanau, Cho, Bengio, Neural Machine Translation by Jointly Learning to Align and Translate (2015) · Decoder를 새로 만든 것이 아니라, 기존 Encoder–Decoder에 덧붙인 계산 장치입니다.</p>
+
+          <div style="border: 2px solid var(--color-divider); padding: 16px; margin-bottom: 20px;">
+            <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;">“좋아한다”를 만들 시점 i의 계산</div>
+            <div style="display: grid; grid-template-columns: 96px repeat(3, minmax(64px, 1fr)); gap: 8px 10px; font-size: 13px; align-items: center;">
+              <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-neutral-700);">입력 단어</div>
+              <div style="border: 2px solid var(--color-neutral-400); padding: 4px; text-align: center; font-weight: 700;">I</div>
+              <div style="border: 2px solid var(--color-neutral-400); padding: 4px; text-align: center; font-weight: 700;">love</div>
+              <div style="border: 2px solid var(--color-neutral-400); padding: 4px; text-align: center; font-weight: 700;">movie</div>
+
+              <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-neutral-700);">Encoder 상태</div>
+              <div style="background: var(--color-text); color: var(--color-bg); padding: 4px; text-align: center; font-weight: 700;">h₁</div>
+              <div style="background: var(--color-text); color: var(--color-bg); padding: 4px; text-align: center; font-weight: 700;">h₂</div>
+              <div style="background: var(--color-text); color: var(--color-bg); padding: 4px; text-align: center; font-weight: 700;">h₃</div>
+
+              <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-neutral-700);">점수 e_ij</div>
+              <div style="text-align: center;">0.2</div>
+              <div style="text-align: center;">2.7</div>
+              <div style="text-align: center;">0.6</div>
+
+              <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-accent-700);">softmax α_ij</div>
+              <div style="text-align: center; font-weight: 700; border-bottom: 2px dotted var(--color-accent);">0.07</div>
+              <div style="text-align: center; font-weight: 700; border-bottom: 2px dotted var(--color-accent);">0.83</div>
+              <div style="text-align: center; font-weight: 700; border-bottom: 2px dotted var(--color-accent);">0.10</div>
+            </div>
+            <div style="text-align: center; font-size: 18px; margin: 12px 0 8px;">↓</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px;">
+              <span style="background: var(--color-accent); color: #fff; padding: 6px 10px; font-weight: 900;">cᵢ</span>
+              <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">= 0.07·h₁ + 0.83·h₂ + 0.10·h₃</span>
+            </div>
+            <div style="font-size: 12px; margin-top: 10px; color: var(--color-neutral-800);">시점마다 새로운 cᵢ가 만들어집니다. Attention은 다음 단어를 직접 고르는 장치가 아니라, 입력의 어느 부분을 얼마나 참고할지 정하는 장치입니다.</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; border-top: 2px solid var(--color-divider);">
+            <div style="border-bottom: 2px solid var(--color-divider); padding: 14px 16px 14px 0;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px;">입력 / 출력</div>
+              <div style="font-size: 13px;">입력: Encoder 상태 전체 h₁…h_n 와 이전 Decoder 상태 sᵢ₋₁<br>출력: 시점별 context vector cᵢ</div>
+            </div>
+            <div style="border-bottom: 2px solid var(--color-divider); padding: 14px 16px 14px 0;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 6px;">attention weight는 어떻게 정해지나</div>
+              <div style="font-size: 13px;">사람이 지정하지 않습니다. 손실 → 출력층 → Decoder → cᵢ → α → 점수 신경망 → Encoder 순으로 역전파되며 함께 학습됩니다.</div>
+            </div>
+          </div>
+
+          <sc-if value="{{ showMath }}" hint-placeholder-val="{{ true }}">
+            <div style="background: var(--color-surface); border: 2px solid var(--color-divider); padding: 14px 16px; margin-top: 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.9;">
+              e_ij = v_aᵀ · tanh( W_s·sᵢ₋₁ + W_h·h_j + b_a )<br>
+              α_ij = exp(e_ij) / Σ_k exp(e_ik)<br>
+              cᵢ = Σ_j α_ij · h_j<br>
+              sᵢ = Decoder( sᵢ₋₁, E(yᵢ₋₁), cᵢ )<br>
+              L = − Σᵢ log P(yᵢ<sup>정답</sup>)
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showDelta }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 20px;">
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">유지</div><div style="font-size: 13px; margin-top: 4px;">Encoder LSTM, Decoder LSTM</div></div>
+              <div style="border: 2px solid var(--color-accent); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-700);">추가</div><div style="font-size: 13px; margin-top: 4px;">점수 신경망, α, 시점별 cᵢ</div></div>
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">제거</div><div style="font-size: 13px; margin-top: 4px;">하나뿐인 고정 context vector</div></div>
+            </div>
+          </sc-if>
+
+          <div style="border-top: 2px solid var(--color-text); margin-top: 22px; padding-top: 14px;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 6px;">다음 모델이 해결한 한계</div>
+            <div style="font-size: 14px;">참고 범위는 넓어졌지만 Encoder·Decoder가 여전히 RNN이라 hₜ₋₁을 기다려야 하고, 병렬 계산이 불가능합니다. → Transformer가 RNN을 아예 제거합니다.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sel.tf }}" hint-placeholder-val="{{ false }}">
+        <div style="border: 2px solid var(--color-text); background: #fff; padding: 22px;">
+          <h2 style="font-size: 28px; font-weight: 900; margin: 0 0 4px; letter-spacing: -0.01em;">05 &nbsp;Transformer</h2>
+          <p style="font-size: 13px; margin: 0 0 20px; color: var(--color-neutral-800);">Vaswani et al., Attention Is All You Need (2017) Figure 1–2 · 역할(Encoder·Decoder)은 그대로 두고, 그 역할을 수행하는 내부 부품을 LSTM에서 Attention 블록으로 교체했습니다.</p>
+
+          <div style="border: 2px solid var(--color-divider); padding: 16px; margin-bottom: 18px;">
+            <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;">Self-Attention 계산 흐름</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 12px; font-weight: 700;">
+              <span style="border: 2px solid var(--color-text); padding: 5px 9px;">X = 토큰 임베딩 + positional encoding</span>
+              <span style="font-size: 16px;">→</span>
+              <span style="border: 2px solid var(--color-text); background: var(--color-neutral-200); padding: 5px 9px;">Q = XW<sup>Q</sup></span>
+              <span style="border: 2px solid var(--color-text); background: var(--color-neutral-200); padding: 5px 9px;">K = XW<sup>K</sup></span>
+              <span style="border: 2px solid var(--color-text); background: var(--color-neutral-200); padding: 5px 9px;">V = XW<sup>V</sup></span>
+              <span style="font-size: 16px;">→</span>
+              <span style="border: 2px solid var(--color-neutral-500); padding: 5px 9px;">QKᵀ</span>
+              <span style="font-size: 16px;">→</span>
+              <span style="border: 2px solid var(--color-neutral-500); padding: 5px 9px;">÷ √d_k</span>
+              <span style="font-size: 16px;">→</span>
+              <span style="border: 2px solid var(--color-accent); padding: 5px 9px; color: var(--color-accent-700);">softmax</span>
+              <span style="font-size: 16px;">→</span>
+              <span style="border: 2px solid var(--color-neutral-500); padding: 5px 9px;">V 가중합</span>
+              <span style="font-size: 16px;">→</span>
+              <span style="background: var(--color-text); color: var(--color-bg); padding: 5px 9px;">Z · 문맥이 반영된 출력</span>
+            </div>
+            <div style="font-size: 12px; margin-top: 12px; color: var(--color-neutral-800);">LSTM의 반복 계산이 사라져 토큰 순서를 알 수 없으므로 positional encoding을 더합니다. 모든 토큰이 다른 모든 토큰을 한 번에 직접 참고합니다.</div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;">
+            <div style="border: 2px solid var(--color-text); padding: 14px; flex: 1 1 220px;">
+              <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">Encoder 블록</div>
+              <div style="font-size: 13px; line-height: 2;">Multi-Head Self-Attention<br>→ Add &amp; LayerNorm<br>→ Feed-Forward Network<br>→ Add &amp; LayerNorm</div>
+              <div style="font-size: 12px; margin-top: 8px; color: var(--color-neutral-800);">양방향으로 전부 참고. N층 반복.</div>
+            </div>
+            <div style="border: 2px solid var(--color-accent); padding: 14px; flex: 1 1 220px;">
+              <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; color: var(--color-accent-700);">Decoder 블록</div>
+              <div style="font-size: 13px; line-height: 2;">Masked Self-Attention<br>→ Cross-Attention<br>→ Feed-Forward Network</div>
+              <div style="font-size: 12px; margin-top: 8px; color: var(--color-neutral-800);">Cross-Attention의 Q는 Decoder 표현, K와 V는 Encoder 출력입니다. Bahdanau Attention과 같은 일을 Q·K·V 행렬 곱으로 합니다.</div>
+            </div>
+          </div>
+
+          <div style="border: 2px solid var(--color-divider); padding: 14px 16px; margin-bottom: 18px; font-size: 13px;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 8px;">Masked Self-Attention — 미래를 가린다</div>
+            <div style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; line-height: 1.9;">
+              1번째 위치 · 1번 토큰만 참고<br>
+              2번째 위치 · 1–2번 토큰 참고<br>
+              3번째 위치 · 1–3번 토큰 참고
+            </div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;">
+            <div style="border-top: 2px solid var(--color-text); padding-top: 12px; flex: 1 1 220px;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px;">학습할 때</div>
+              <div style="font-size: 13px;">정답 문장을 이미 알고 있으므로 여러 출력 위치를 한 번에 병렬 계산합니다.<br><span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px;">입력 &lt;BOS&gt; 나는 이 영화를<br>정답 &nbsp;나는 이 영화를 좋아한다</span></div>
+            </div>
+            <div style="border-top: 2px solid var(--color-accent); padding-top: 12px; flex: 1 1 220px;">
+              <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; color: var(--color-accent-700);">실제 생성할 때</div>
+              <div style="font-size: 13px;">미래 토큰이 없으므로 한 토큰씩 auto-regressive하게 이어 붙입니다.<br><span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px;">&lt;BOS&gt; → 나는 → 나는 이 → 나는 이 영화를 → … → &lt;EOS&gt;</span></div>
+            </div>
+          </div>
+
+          <sc-if value="{{ showMath }}" hint-placeholder-val="{{ true }}">
+            <div style="background: var(--color-surface); border: 2px solid var(--color-divider); padding: 14px 16px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.9;">
+              Attention(Q, K, V) = softmax( QKᵀ / √d_k ) · V<br>
+              FFN(x) = ReLU( xW₁ + b₁ )W₂ + b₂
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showDelta }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 20px;">
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">유지</div><div style="font-size: 13px; margin-top: 4px;">Encoder–Decoder 역할, Attention 개념, 어휘 출력층</div></div>
+              <div style="border: 2px solid var(--color-accent); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-700);">추가</div><div style="font-size: 13px; margin-top: 4px;">Self-Attention, Multi-Head, positional encoding, Add &amp; LayerNorm, causal mask</div></div>
+              <div style="border: 2px solid var(--color-neutral-400); padding: 10px 12px;"><div style="font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-700);">제거</div><div style="font-size: 13px; margin-top: 4px;">RNN·LSTM 순환 계산, hidden state 순차 전달</div></div>
+            </div>
+          </sc-if>
+
+          <div style="border-top: 2px solid var(--color-text); margin-top: 22px; padding-top: 14px;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 6px;">다음 단계 · 한계가 아니라 분기</div>
+            <div style="font-size: 14px;">이해가 목적이면 Encoder 블록만 쌓으면 되고, 생성이 목적이면 Cross-Attention 없는 Causal Decoder 블록만 쌓으면 됩니다. → BERT와 GPT.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sel.bertgpt }}" hint-placeholder-val="{{ false }}">
+        <div style="border: 2px solid var(--color-text); background: #fff; padding: 22px;">
+          <h2 style="font-size: 28px; font-weight: 900; margin: 0 0 4px; letter-spacing: -0.01em;">06 &nbsp;BERT / GPT</h2>
+          <p style="font-size: 13px; margin: 0 0 20px; color: var(--color-neutral-800);">같은 Transformer 블록에서 목적에 따라 갈라진 두 계열입니다.</p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 18px;">
+            <div style="border: 2px solid var(--color-text); padding: 16px; flex: 1 1 260px;">
+              <div style="font-size: 20px; font-weight: 900; margin-bottom: 2px;">BERT</div>
+              <div style="font-size: 12px; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 14px;">Transformer Encoder 계열 · Devlin et al. 2018</div>
+              <div style="font-size: 13px; line-height: 2; border-top: 2px solid var(--color-divider); border-bottom: 2px solid var(--color-divider); padding: 10px 0;">
+                토큰 + segment + position embedding<br>
+                → 양방향 Self-Attention Encoder 블록 ×L<br>
+                → 각 토큰의 문맥 표현 H<br>
+                → [MASK] 자리 복원 또는 분류 헤드
+              </div>
+              <div style="font-size: 13px; margin-top: 12px;">각 토큰이 왼쪽과 오른쪽을 모두 참고합니다. Masked Language Modeling으로 사전학습하고, 문장 분류·토큰 분류·질의응답에 fine-tuning합니다. 기본 BERT에는 생성용 Decoder가 없습니다.</div>
+              <sc-if value="{{ showMath }}" hint-placeholder-val="{{ true }}">
+                <div style="background: var(--color-surface); border: 2px solid var(--color-divider); padding: 12px 14px; margin-top: 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.9;">
+                  H⁽ˡ⁾ = EncoderBlock( H⁽ˡ⁻¹⁾ )<br>
+                  P(x_masked) = softmax( W·h_[MASK] )
+                </div>
+              </sc-if>
+              <sc-if value="{{ showNumbers }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size: 12px; margin-top: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">나는 이 영화를 [MASK] → 좋아한다 0.71</div>
+              </sc-if>
+            </div>
+
+            <div style="border: 2px solid var(--color-accent); padding: 16px; flex: 1 1 260px;">
+              <div style="font-size: 20px; font-weight: 900; margin-bottom: 2px; color: var(--color-accent-700);">GPT</div>
+              <div style="font-size: 12px; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 14px;">Causal Decoder 계열 · Improving Language Understanding by Generative Pre-Training</div>
+              <div style="font-size: 13px; line-height: 2; border-top: 2px solid var(--color-divider); border-bottom: 2px solid var(--color-divider); padding: 10px 0;">
+                토큰 embedding + position<br>
+                → Causal Self-Attention<br>
+                → Feed-Forward Network &nbsp;(×L층 반복)<br>
+                → Vocabulary Linear layer<br>
+                → softmax → 다음 토큰 선택<br>
+                → 고른 토큰을 입력 뒤에 붙여 반복
+              </div>
+              <div style="font-size: 13px; margin-top: 12px;">번역용 Decoder에 있던 Encoder–Decoder Cross-Attention은 없습니다. 참고할 입력이 따로 있는 것이 아니라, 지금까지의 출력 자체가 입력입니다.</div>
+              <sc-if value="{{ showMath }}" hint-placeholder-val="{{ true }}">
+                <div style="background: var(--color-surface); border: 2px solid var(--color-divider); padding: 12px 14px; margin-top: 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.9;">
+                  H⁽ˡ⁾ = DecoderBlock( H⁽ˡ⁻¹⁾, causal mask )<br>
+                  logits = W_vocab · h_t<br>
+                  P(y_t₊₁ | y≤t) = softmax(logits)
+                </div>
+              </sc-if>
+              <sc-if value="{{ showNumbers }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size: 12px; margin-top: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">나는 이 영화를 → 좋아한다 0.62 / 싫어한다 0.21 / 봤다 0.11</div>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="border-top: 2px solid var(--color-text); margin-top: 22px; padding-top: 14px;">
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 6px;">정리</div>
+            <div style="font-size: 14px;">RNN·LSTM은 계산 부품, Seq2Seq는 구성 방식, Attention은 계산 장치, Transformer는 그 장치로 Encoder와 Decoder를 구현한 구조, BERT와 GPT는 그 구조를 어느 쪽으로 쌓았는지의 차이입니다.</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showMath&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;표시 항목&quot;},&quot;showNumbers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;표시 항목&quot;},&quot;showDelta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;표시 항목&quot;}}">
+class Component extends DCLogic {
+  state = { sel: 'rnn' };
+  pick(k) { this.setState({ sel: k }); }
+  renderVals() {
+    const s = this.state.sel;
+    const keys = ['rnn', 'lstm', 'seq2seq', 'attn', 'tf', 'bertgpt'];
+    const sel = {}, go = {};
+    keys.forEach(k => { sel[k] = s === k; go[k] = () => this.pick(k); });
+    return {
+      sel, go,
+      showMath: this.props.showMath ?? true,
+      showNumbers: this.props.showNumbers ?? true,
+      showDelta: this.props.showDelta ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

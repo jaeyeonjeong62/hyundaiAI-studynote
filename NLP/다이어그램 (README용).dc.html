@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-fcae6545-bc29-4b2b-afc8-df4f91ed8a5c/styles.css">
+<script src="_ds/modernist-fcae6545-bc29-4b2b-afc8-df4f91ed8a5c/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #f3f2f2; }
+  a { color: var(--color-accent-700); }
+  a:hover { color: var(--color-accent); }
+</style>
+</helmet>
+
+<div style="font-family: 'Archivo', 'Noto Sans KR', sans-serif; color: var(--color-text); background: var(--color-bg); padding: 32px 24px 64px; display: flex; flex-direction: column; gap: 32px; align-items: flex-start;">
+
+  <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-700);">README 내보내기용 · 그림만</div>
+
+  <div data-cap="fig-legend" style="width: 880px; background: #fff; border: 2px solid var(--color-text); padding: 26px 28px;">
+    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-700); margin-bottom: 16px;">시각 요소 약속</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 14px; font-size: 13px;">
+      <span style="display: flex; gap: 8px; align-items: center;"><span style="border: 2px solid var(--color-text); background: #fff; padding: 4px 9px; font-weight: 700;">Encoder</span></span>
+      <span style="display: flex; gap: 8px; align-items: center;"><span style="border: 2px solid var(--color-accent); background: #fff; padding: 4px 9px; font-weight: 700; color: var(--color-accent-700);">Decoder</span></span>
+      <span style="display: flex; gap: 8px; align-items: center;"><span style="background: var(--color-text); color: var(--color-bg); padding: 4px 9px; font-weight: 700;">h</span>hidden state</span>
+      <span style="display: flex; gap: 8px; align-items: center;"><span style="border: 2px dashed var(--color-text); padding: 3px 9px; font-weight: 700;">c</span>cell state</span>
+      <span style="display: flex; gap: 8px; align-items: center;"><span style="background: var(--color-accent); color: #fff; padding: 4px 9px; font-weight: 700;">ctx</span>context vector</span>
+      <span style="display: flex; gap: 8px; align-items: center;"><span style="border-bottom: 2px dotted var(--color-accent); font-weight: 700; padding: 0 6px;">0.83</span>attention weight</span>
+      <span style="display: flex; gap: 8px; align-items: center;"><span style="border: 2px solid var(--color-text); background: var(--color-neutral-200); padding: 4px 9px; font-weight: 700;">Q K V</span></span>
+      <span style="display: flex; gap: 8px; align-items: center;"><span style="display: inline-flex; gap: 3px; align-items: flex-end; height: 16px;"><span style="width: 6px; height: 16px; background: var(--color-text);"></span><span style="width: 6px; height: 9px; background: var(--color-neutral-500);"></span><span style="width: 6px; height: 5px; background: var(--color-neutral-400);"></span></span>logits</span>
+    </div>
+  </div>
+
+  <div data-cap="fig-1" style="width: 880px; background: #fff; border: 2px solid var(--color-text); padding: 30px 28px;">
+    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 22px;">01 &nbsp;RNN</div>
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+        <span style="border: 2px solid var(--color-neutral-400); padding: 5px 11px; font-size: 14px; font-weight: 700;">나는</span>
+        <span style="font-size: 16px;">↓</span>
+        <span style="border: 2px solid var(--color-text); padding: 12px 16px; font-size: 14px; font-weight: 900;">RNN</span>
+        <span style="font-size: 16px;">↓</span>
+        <span style="background: var(--color-text); color: var(--color-bg); padding: 5px 11px; font-size: 14px; font-weight: 700;">h₁</span>
+      </div>
+      <div style="font-size: 13px; font-weight: 700; color: var(--color-accent-700); padding: 0 10px; white-space: nowrap;">h₁ →</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+        <span style="border: 2px solid var(--color-neutral-400); padding: 5px 11px; font-size: 14px; font-weight: 700;">영화를</span>
+        <span style="font-size: 16px;">↓</span>
+        <span style="border: 2px solid var(--color-text); padding: 12px 16px; font-size: 14px; font-weight: 900;">RNN</span>
+        <span style="font-size: 16px;">↓</span>
+        <span style="background: var(--color-text); color: var(--color-bg); padding: 5px 11px; font-size: 14px; font-weight: 700;">h₂</span>
+      </div>
+      <div style="font-size: 13px; font-weight: 700; color: var(--color-accent-700); padding: 0 10px; white-space: nowrap;">h₂ →</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+        <span style="border: 2px solid var(--color-neutral-400); padding: 5px 11px; font-size: 14px; font-weight: 700;">좋아한다</span>
+        <span style="font-size: 16px;">↓</span>
+        <span style="border: 2px solid var(--color-text); padding: 12px 16px; font-size: 14px; font-weight: 900;">RNN</span>
+        <span style="font-size: 16px;">↓</span>
+        <span style="background: var(--color-text); color: var(--color-bg); padding: 5px 11px; font-size: 14px; font-weight: 700;">h₃</span>
+      </div>
+      <div style="font-size: 13px; padding-left: 18px; max-width: 17ch; color: var(--color-neutral-700);">같은 셀을 매 시점 반복 사용</div>
+    </div>
+  </div>
+
+  <div data-cap="fig-2" style="width: 880px; background: #fff; border: 2px solid var(--color-text); padding: 30px 28px;">
+    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 22px;">02 &nbsp;LSTM</div>
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 700;">
+        <span style="border: 2px dashed var(--color-text); padding: 4px 10px;">cₜ₋₁</span>
+        <span style="background: var(--color-text); color: var(--color-bg); padding: 5px 11px;">hₜ₋₁</span>
+        <span style="border: 2px solid var(--color-neutral-400); padding: 5px 11px;">xₜ</span>
+      </div>
+      <span style="font-size: 20px;">→</span>
+      <div style="border: 2px solid var(--color-text); padding: 18px 20px;">
+        <div style="font-size: 12px; font-weight: 900; letter-spacing: 0.1em; margin-bottom: 14px;">LSTM CELL</div>
+        <div style="display: flex; gap: 10px; font-size: 14px; font-weight: 700;">
+          <span style="border: 2px solid var(--color-neutral-500); padding: 6px 10px;">forget &nbsp;0.9</span>
+          <span style="border: 2px solid var(--color-neutral-500); padding: 6px 10px;">input &nbsp;0.2</span>
+          <span style="border: 2px solid var(--color-neutral-500); padding: 6px 10px;">output &nbsp;0.7</span>
+        </div>
+      </div>
+      <span style="font-size: 20px;">→</span>
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; font-weight: 700;">
+        <span style="border: 2px dashed var(--color-text); padding: 4px 10px;">cₜ</span>
+        <span style="background: var(--color-text); color: var(--color-bg); padding: 5px 11px;">hₜ</span>
+      </div>
+    </div>
+  </div>
+
+  <div data-cap="fig-3" style="width: 880px; background: #fff; border: 2px solid var(--color-text); padding: 30px 28px;">
+    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 22px;">03 &nbsp;Seq2Seq</div>
+    <div style="display: flex; flex-direction: column; gap: 12px; align-items: stretch;">
+      <div style="border: 2px solid var(--color-text); padding: 16px;">
+        <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px;">Encoder</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; font-weight: 700;">
+          <span style="border: 2px solid var(--color-neutral-400); padding: 4px 8px;">I</span>
+          <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 8px;">h₁</span>
+          <span>→</span>
+          <span style="border: 2px solid var(--color-neutral-400); padding: 4px 8px;">love</span>
+          <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 8px;">h₂</span>
+          <span>→</span>
+          <span style="border: 2px solid var(--color-neutral-400); padding: 4px 8px;">this</span>
+          <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 8px;">h₃</span>
+          <span>→</span>
+          <span style="border: 2px solid var(--color-neutral-400); padding: 4px 8px;">movie</span>
+          <span style="background: var(--color-text); color: var(--color-bg); padding: 4px 8px;">h₄</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; padding-left: 16px;">
+        <span style="font-size: 18px;">↓</span>
+        <span style="background: var(--color-accent); color: #fff; padding: 7px 12px; font-size: 13px; font-weight: 900;">c = h₄</span>
+        <span style="font-size: 12px; color: var(--color-accent-700); font-weight: 700;">고정 길이 context vector</span>
+      </div>
+      <div style="border: 2px solid var(--color-accent); padding: 16px;">
+        <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; color: var(--color-accent-700);">Decoder</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; font-weight: 700;">
+          <span style="border: 2px solid var(--color-accent); padding: 4px 8px;">&lt;BOS&gt;</span>
+          <span>→</span>
+          <span style="border: 2px solid var(--color-accent); padding: 4px 8px;">나는</span>
+          <span>→</span>
+          <span style="border: 2px solid var(--color-accent); padding: 4px 8px;">이</span>
+          <span>→</span>
+          <span style="border: 2px solid var(--color-accent); padding: 4px 8px;">영화를</span>
+          <span>→</span>
+          <span style="border: 2px solid var(--color-accent); padding: 4px 8px;">좋아한다</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div data-cap="fig-4" style="width: 880px; background: #fff; border: 2px solid var(--color-text); padding: 30px 28px;">
+    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 22px;">04 &nbsp;Attention</div>
+    <div style="display: grid; grid-template-columns: 110px repeat(3, 120px); gap: 10px 12px; font-size: 14px; align-items: center;">
+      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-neutral-700);">입력</div>
+      <div style="border: 2px solid var(--color-neutral-400); padding: 6px; text-align: center; font-weight: 700;">I</div>
+      <div style="border: 2px solid var(--color-neutral-400); padding: 6px; text-align: center; font-weight: 700;">love</div>
+      <div style="border: 2px solid var(--color-neutral-400); padding: 6px; text-align: center; font-weight: 700;">movie</div>
+
+      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-neutral-700);">Encoder 상태</div>
+      <div style="background: var(--color-text); color: var(--color-bg); padding: 6px; text-align: center; font-weight: 700;">h₁</div>
+      <div style="background: var(--color-text); color: var(--color-bg); padding: 6px; text-align: center; font-weight: 700;">h₂</div>
+      <div style="background: var(--color-text); color: var(--color-bg); padding: 6px; text-align: center; font-weight: 700;">h₃</div>
+
+      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-neutral-700);">점수 e</div>
+      <div style="text-align: center;">0.2</div>
+      <div style="text-align: center;">2.7</div>
+      <div style="text-align: center;">0.6</div>
+
+      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-accent-700);">softmax α</div>
+      <div style="text-align: center; font-weight: 700; border-bottom: 2px dotted var(--color-accent);">0.07</div>
+      <div style="text-align: center; font-weight: 700; border-bottom: 2px dotted var(--color-accent);">0.83</div>
+      <div style="text-align: center; font-weight: 700; border-bottom: 2px dotted var(--color-accent);">0.10</div>
+    </div>
+    <div style="font-size: 18px; margin: 16px 0 12px; padding-left: 132px;">↓</div>
+    <div style="display: flex; gap: 12px; align-items: center; font-size: 14px;">
+      <span style="background: var(--color-accent); color: #fff; padding: 7px 12px; font-weight: 900;">cᵢ</span>
+      <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">= 0.07·h₁ + 0.83·h₂ + 0.10·h₃</span>
+    </div>
+  </div>
+
+  <div data-cap="fig-5" style="width: 880px; background: #fff; border: 2px solid var(--color-text); padding: 30px 28px;">
+    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 22px;">05 &nbsp;Transformer · Self-Attention</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 24px;">
+      <span style="border: 2px solid var(--color-text); padding: 7px 11px;">X = 임베딩 + position</span>
+      <span style="font-size: 16px;">→</span>
+      <span style="border: 2px solid var(--color-text); background: var(--color-neutral-200); padding: 7px 11px;">Q</span>
+      <span style="border: 2px solid var(--color-text); background: var(--color-neutral-200); padding: 7px 11px;">K</span>
+      <span style="border: 2px solid var(--color-text); background: var(--color-neutral-200); padding: 7px 11px;">V</span>
+      <span style="font-size: 16px;">→</span>
+      <span style="border: 2px solid var(--color-neutral-500); padding: 7px 11px;">QKᵀ ÷ √d_k</span>
+      <span style="font-size: 16px;">→</span>
+      <span style="border: 2px solid var(--color-accent); padding: 7px 11px; color: var(--color-accent-700);">softmax</span>
+      <span style="font-size: 16px;">→</span>
+      <span style="border: 2px solid var(--color-neutral-500); padding: 7px 11px;">V 가중합</span>
+      <span style="font-size: 16px;">→</span>
+      <span style="background: var(--color-text); color: var(--color-bg); padding: 7px 11px;">Z</span>
+    </div>
+    <div style="display: flex; gap: 16px;">
+      <div style="border: 2px solid var(--color-text); padding: 16px; flex: 1 1 0;">
+        <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;">Encoder 블록</div>
+        <div style="font-size: 13px; line-height: 2.1;">Multi-Head Self-Attention<br>Add &amp; LayerNorm<br>Feed-Forward Network<br>Add &amp; LayerNorm</div>
+      </div>
+      <div style="border: 2px solid var(--color-accent); padding: 16px; flex: 1 1 0;">
+        <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; color: var(--color-accent-700);">Decoder 블록</div>
+        <div style="font-size: 13px; line-height: 2.1;">Masked Self-Attention<br>Cross-Attention &nbsp;<span style="color: var(--color-neutral-700);">(Q: Decoder, K·V: Encoder)</span><br>Feed-Forward Network</div>
+      </div>
+    </div>
+  </div>
+
+  <div data-cap="fig-6" style="width: 880px; background: #fff; border: 2px solid var(--color-text); padding: 30px 28px;">
+    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 22px;">06 &nbsp;BERT / GPT</div>
+    <div style="display: flex; gap: 18px;">
+      <div style="border: 2px solid var(--color-text); padding: 18px; flex: 1 1 0;">
+        <div style="font-size: 20px; font-weight: 900;">BERT</div>
+        <div style="font-size: 12px; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 14px;">Encoder 계열 · 이해</div>
+        <div style="font-size: 13px; line-height: 2.1; border-top: 2px solid var(--color-divider); padding-top: 12px;">token + segment + position<br>↓<br>양방향 Self-Attention ×L<br>↓<br>문맥 표현 H<br>↓<br>[MASK] 복원 · 분류 헤드</div>
+      </div>
+      <div style="border: 2px solid var(--color-accent); padding: 18px; flex: 1 1 0;">
+        <div style="font-size: 20px; font-weight: 900; color: var(--color-accent-700);">GPT</div>
+        <div style="font-size: 12px; font-weight: 700; color: var(--color-neutral-700); margin-bottom: 14px;">Causal Decoder 계열 · 생성</div>
+        <div style="font-size: 13px; line-height: 2.1; border-top: 2px solid var(--color-divider); padding-top: 12px;">token + position<br>↓<br>Causal Self-Attention + FFN ×L<br>↓<br>Vocabulary Linear → softmax<br>↓<br>다음 토큰 → 입력 뒤에 붙여 반복</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
