@@ -67,17 +67,17 @@ Elman, *Finding Structure in Time* (1990)
 
 여기서는 가장 기본적인 RNN 셀을 다룹니다. 아래 계산은 **현재 입력을 변환한 값 + 이전 상태를 변환한 값 + 편향**을 더하고, tanh를 적용해 각 원소를 −1과 1 사이로 바꿉니다. tanh는 단순한 선형 변환만으로 표현하기 어려운 관계를 학습하게 하는 비선형 함수입니다. 첫 상태 $h_0$는 보통 0으로 시작합니다.
 
-$$
+```math
 h_t = \tanh(W_x x_t + W_h h_{t-1} + b)
-$$
+```
 
 작은 예시 — 그림의 짧은 문장 `나는 영화를 좋아한다`를 읽는다고 하겠습니다. "나는"을 읽은 상태가 $h_1 = [0.4, -0.2]$이고, 다음 입력 "영화를"과 이전 상태의 가중합이 $W_x x_2 + W_h h_1 + b = [0.8673, 0.1003]$이라고 가정하면, tanh를 적용한 새 상태는 $h_2 \approx [0.7, 0.1]$입니다.
 
 이제 이 상태로 **다음 토큰을 예측하는 출력층**을 붙입니다. 아래 식은 $h_t$를 후보 토큰별 점수로 바꾼 뒤, softmax로 합이 1인 확률분포 $p_t$를 만듭니다.
 
-$$
+```math
 p_t = \mathrm{softmax}(W_{\mathrm{out}} h_t + b_{\mathrm{out}})
-$$
+```
 
 예시의 $h_2$는 `나는 영화를`까지 읽은 상태이므로, $p_2$는 그다음 토큰의 확률분포입니다. 학습에서는 정답인 `좋아한다`의 확률이 높아지도록 RNN과 출력층의 파라미터를 함께 갱신합니다. **RNN 셀은 상태를 갱신하고, 출력층은 그 상태로 토큰 확률을 계산합니다.**
 
@@ -97,29 +97,29 @@ LSTM은 hidden state 외에 **cell state $c_t$라는 기억 통로**를 둡니�
 
 아래는 forget gate를 포함한 현대적인 표준 LSTM입니다. 각 게이트에는 **서로 다른 학습 가능한 가중치와 편향**이 있으며, 같은 층의 모든 시점에서 공유합니다. 먼저 세 게이트와 후보 기억을 계산하고, 이를 이용해 cell state와 hidden state를 갱신합니다.
 
-$$
+```math
 f_t = \sigma(W_f [h_{t-1}, x_t] + b_f)
-$$
+```
 
-$$
+```math
 i_t = \sigma(W_i [h_{t-1}, x_t] + b_i)
-$$
+```
 
-$$
+```math
 o_t = \sigma(W_o [h_{t-1}, x_t] + b_o)
-$$
+```
 
-$$
+```math
 g_t = \tanh(W_g [h_{t-1}, x_t] + b_g)
-$$
+```
 
-$$
+```math
 c_t = f_t \odot c_{t-1} + i_t \odot g_t
-$$
+```
 
-$$
+```math
 h_t = o_t \odot \tanh(c_t)
-$$
+```
 
 대괄호는 이전 hidden state와 현재 입력의 이어 붙이기(concatenation), σ는 각 원소를 0과 1 사이로 바꾸는 sigmoid 함수, ⊙는 같은 위치의 원소끼리 곱하는 연산입니다. 각 게이트에 sigmoid를 따로 적용하므로 세 게이트의 합이 1일 필요는 없습니다. 후보 기억 $g_t$는 cell state에 추가할 값이며, input gate가 그 반영 비율을 정합니다.
 
@@ -174,13 +174,13 @@ Sutskever, Vinyals, Le, *Sequence to Sequence Learning with Neural Networks* (20
 
 입력 길이를 T, 출력 시점을 i라고 하겠습니다. `enc`와 `dec`는 Encoder와 Decoder를 구분하는 표시입니다. Decoder 상태 $s_i$는 hidden state와 cell state의 쌍이며, 아래 식은 Encoder의 마지막 상태를 Decoder의 초기 상태로 넘기는 예시입니다.
 
-$$
+```math
 s_0 = (h_T^{enc}, c_T^{enc})
-$$
+```
 
-$$
+```math
 s_i = \mathrm{LSTM}_{dec}(E(y_{i-1}),\, s_{i-1})
-$$
+```
 
 현재 출력 토큰을 $y_i$라고 할 때, Decoder는 이전 토큰의 임베딩 $E(y_{i-1})$과 이전 상태 $s_{i-1}$로 새 상태를 계산합니다. 여기서는 Encoder와 Decoder의 상태 크기가 같다고 가정하며, 크기나 층 구성이 다르면 변환을 둘 수 있습니다.
 
@@ -200,17 +200,17 @@ Decoder는 같은 LSTM을 반복 사용합니다. 아래 표에서는 각 행의
 
 이제 상태에서 실제 토큰을 고르는 과정을 보겠습니다. 후보는 토크나이저가 정한 **어휘 집합(vocabulary)** 입니다. Decoder 상태 안의 hidden state $h_i^{dec}$를 **선형층(Linear layer)** 에 넣어 후보별 점수인 **로짓(logits)** 을 만들고, softmax로 확률분포를 얻습니다. 여기서 선형층은 가중치 행렬을 곱하고 편향을 더하는 연산입니다.
 
-$$
+```math
 z_i = W_{\mathrm{out}} h_i^{dec} + b_{\mathrm{out}} \in \mathbb{R}^{N_{\mathrm{vocab}}}
-$$
+```
 
-$$
+```math
 p_i = \mathrm{softmax}(z_i)
-$$
+```
 
-$$
+```math
 P(y_i = v \mid y_1, \ldots, y_{i-1}, x) = p_i[v]
-$$
+```
 
 여기서 $N_{\mathrm{vocab}}$은 어휘 집합의 크기, v는 후보 토큰의 ID, $y_1, \ldots, y_{i-1}$은 이전 출력 토큰들, x는 전체 입력 문장입니다. $p_i[v]$는 확률분포에서 후보 v에 해당하는 값입니다. 가장 확률이 높은 토큰을 고르는 **greedy**나 확률에 따라 뽑는 **sampling**으로 다음 토큰을 정할 수 있습니다.
 
@@ -256,9 +256,9 @@ Softmax로 얻은 **attention weight $\alpha_{ij}$** 는 출력 시점 i에서 �
 
 **LSTM 게이트와 마찬가지로 Attention도 학습된 파라미터로 입력에 따른 값을 계산합니다.** 직접 학습하는 것은 점수 신경망의 파라미터이며, attention weight인 α는 매번 점수를 softmax에 넣어 얻는 계산 결과입니다. α 자체를 문장과 무관한 고정 파라미터로 저장하지 않습니다. 정답 토큰에 대한 손실은 점수 신경망뿐 아니라 Encoder·Decoder에도 역전파됩니다.
 
-$$
-L = -\sum_i \log P(y_i^{*} \mid y_1^{*}, \ldots, y_{i-1}^{*}, x)
-$$
+```math
+L = -\sum_i \log P(y_i^{\ast} \mid y_1^{\ast}, \ldots, y_{i-1}^{\ast}, x)
+```
 
 별표(*)는 정답 토큰을 뜻합니다. 이 손실은 각 시점의 정답 토큰에 부여한 확률이 높을수록 작아집니다. Seq2Seq에서도 사용하는 다음 토큰 손실이며, Attention을 추가하면 점수 신경망에도 기울기가 전달됩니다. 따라서 어느 단어를 참고해야 하는지 별도로 지정하지 않고도 번역 정답으로 관련도 계산을 학습할 수 있습니다.
 
@@ -293,21 +293,21 @@ RNN 기반 Attention은 정보를 찾아볼 수 있어도 상태를 순서대로
 
 순환 연결이 없어지면 처리 순서 자체로 토큰 위치를 전달할 수 없습니다. 그래서 첫 입력에는 토큰 임베딩과 **위치 인코딩(positional encoding)** 을 더합니다.
 
-$$
+```math
 X = \text{Token Embedding} + \text{Positional Encoding}
-$$
+```
 
 Attention을 계산할 때는 각 토큰 표현에서 세 벡터를 만듭니다. **Query(Q)** 는 해당 토큰이 무엇을 참고할지 점수를 매기는 표현, **Key(K)** 는 Query와 비교할 표현, **Value(V)** 는 실제로 모아 올 정보입니다. 입력에 가중치 행렬을 곱해 다른 표현으로 바꾸는 연산을 여기서는 **투영(projection)** 이라고 합니다.
 
-$$
+```math
 Q = XW^Q, \quad K = XW^K, \quad V = XW^V
-$$
+```
 
 이 절에서는 토큰 표현을 행으로 쌓은 행렬을 사용하므로 가중치를 오른쪽에 곱합니다. 앞의 RNN 수식은 토큰 벡터를 열로 두어 왼쪽에 곱했으며, 표기 방향만 다릅니다. **Q와 K의 전치 행렬을 곱해 관련도 점수 계산 → 크기 조정 → mask 적용 → softmax → V 가중합** 순서입니다. 관련도를 벡터 내적으로 구하고 크기를 조정하므로 **scaled dot-product attention**이라고 부릅니다.
 
-$$
+```math
 \mathrm{Attention}(Q, K, V) = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}} + M\right)V
-$$
+```
 
 $d_k$는 Key 벡터의 차원입니다. 그 제곱근으로 나누는 것은 큰 내적 때문에 softmax가 일부 위치에 지나치게 집중하는 것을 완화합니다. M은 **mask**, 즉 참고를 허용할 위치에 0, 가릴 위치에 음의 무한대를 더하는 행렬입니다. Softmax는 각 Query의 행에서 Key 위치들에 대해 적용하므로 가려진 위치의 확률은 0이 됩니다. 문장 길이를 맞추기 위해 넣는 채움 토큰인 **padding**도 가릴 수 있습니다.
 
@@ -337,9 +337,9 @@ Cross-Attention은 앞 절의 Bahdanau Attention처럼 번역에 필요한 입�
 
 Attention이 토큰 사이의 정보를 모았다면, **FFN(Feed-Forward Network)** 은 모은 표현을 각 위치에서 변환합니다. 같은 층에서는 모든 위치에 같은 가중치를 적용합니다. 아래 x는 한 토큰 위치의 입력 표현이며, ReLU는 음수를 0으로 바꾸고 양수는 유지하는 활성화 함수입니다.
 
-$$
+```math
 \mathrm{FFN}(x) = \mathrm{ReLU}(xW_1 + b_1)W_2 + b_2
-$$
+```
 
 각 하위 층에는 입력을 결과에 더하는 **잔차 연결(residual connection, 그림의 Add)** 과, 토큰 표현의 특성 차원에 걸쳐 값을 정규화하는 **LayerNorm**이 있습니다. 이들은 정보와 기울기가 전달되도록 돕고 학습을 안정화합니다. 그림에는 Decoder 쪽의 Add와 LayerNorm이 생략되어 있습니다.
 
@@ -393,13 +393,13 @@ Transformer Encoder 블록을 여러 층 쌓아, 각 토큰이 왼쪽과 오른�
 
 아래 H는 모든 토큰의 표현을 모은 행렬, l은 블록의 층 번호입니다. $H^{(0)}$은 임베딩 입력이고, $h_m$은 마지막 블록이 만든 m번째 위치의 표현입니다.
 
-$$
+```math
 H^{(l)} = \mathrm{EncoderBlock}(H^{(l-1)})
-$$
+```
 
-$$
+```math
 p_m = \mathrm{softmax}(\mathrm{MLMHead}(h_m))
-$$
+```
 
 m은 복원 대상으로 선택한 위치이고, $p_m$은 그 위치의 원래 토큰에 대한 확률분포입니다. **MLM head**는 비선형 변환·LayerNorm·어휘 투영 등으로 이루어진 예측용 출력층입니다. 여기서 head는 앞 절의 Attention head와 다른 의미입니다.
 
@@ -413,17 +413,17 @@ GPT는 Causal Self-Attention을 사용하는 Decoder 계열 블록을 쌓아 **�
 
 번역용 Transformer Decoder에 있던 Encoder–Decoder Cross-Attention은 없습니다. 생성의 출발점으로 주는 텍스트인 **프롬프트(prompt)** 와 이후 생성한 토큰을 하나의 시퀀스로 처리합니다. 여기서는 GPT 계열의 기본적인 텍스트 언어 모델 구조를 다룹니다.
 
-$$
+```math
 H^{(l)} = \mathrm{DecoderBlock}(H^{(l-1)},\, \text{causal mask})
-$$
+```
 
-$$
+```math
 z_t = W_{\mathrm{vocab}} h_t + b_{\mathrm{vocab}}
-$$
+```
 
-$$
+```math
 p_t = \mathrm{softmax}(z_t), \qquad P(y_{t+1} = v \mid y_{\leq t}) = p_t[v]
-$$
+```
 
 $h_t$는 마지막 블록의 t번째 위치 표현입니다. $y_{\leq t}$는 현재 위치까지의 입력 이력이고, $p_t[v]$는 다음 토큰이 v일 확률입니다. 출력층은 일반적인 표기이며 편향을 생략하는 구현도 있습니다. 학습에서는 정답 시퀀스를 한 칸 밀어 다음 토큰 손실을 계산하고, 추론에서는 고른 토큰을 입력 뒤에 붙여 반복합니다.
 
