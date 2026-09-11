@@ -232,21 +232,29 @@ Bahdanau, Cho, Bengio, *Neural Machine Translation by Jointly Learning to Align 
 
 계산은 **관련도 점수 → 참고 비율 → context vector → Decoder 갱신** 순서입니다. 출력 시점 i에서 입력 위치 j를 얼마나 참고할지 점수 $e_{ij}$를 계산합니다. Bahdanau 방식은 Decoder와 Encoder 표현을 각각 변환해 더한 뒤 점수를 만들기 때문에 **additive attention**이라고 부릅니다. $v_a$도 학습하는 벡터이며, 위 첨자 ⊤는 전치를 뜻합니다.
 
-```math
+<!-- LaTeX source: 04-attention-score
 e_{ij} = v_a^{\top} \tanh\left(W_s h_{i-1}^{\mathrm{dec}} + W_h h_j^{\mathrm{enc}} + b_a\right)
-```
+-->
 
-```math
+![??? ?? ??](docs/img/04-attention-score.svg)
+
+<!-- LaTeX source: 04-attention-weights
 \alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k=1}^{T} \exp(e_{ik})}
-```
+-->
 
-```math
+![?? ??? ?? ?? ??](docs/img/04-attention-weights.svg)
+
+<!-- LaTeX source: 04-attention-context
 a_i = \sum_{j=1}^{T} \alpha_{ij} h_j^{\mathrm{enc}}
-```
+-->
 
-```math
+![?? ?? ??](docs/img/04-attention-context.svg)
+
+<!-- LaTeX source: 04-attention-decoder
 s_i = \mathrm{LSTM}_{\mathrm{dec}}\left([E(y_{i-1}), a_i], s_{i-1}\right)
-```
+-->
+
+![Decoder ?? ??](docs/img/04-attention-decoder.svg)
 
 Softmax로 얻은 **attention weight $\alpha_{ij}$** 는 출력 시점 i에서 입력 위치 j를 참고하는 비율입니다. 분모는 모든 입력 위치의 점수에 exp를 적용해 더한 값이므로, 한 출력 시점에서 참고 비율의 합은 1입니다. 이 비율로 Encoder 상태들을 가중합한 **context vector $a_i$** 를 이전 토큰 임베딩과 이어 붙여 Decoder에 넣습니다. 그림은 같은 context를 c로 표시하지만, 본문에서는 LSTM의 cell state와 구분하려고 a를 사용합니다. Decoder가 갱신한 hidden state는 앞 절의 어휘 출력층으로 전달합니다.
 
