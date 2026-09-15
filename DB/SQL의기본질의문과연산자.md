@@ -120,14 +120,14 @@ ORDER BY 4 DESC;
 
 |패턴 문자|설명|예시 문제 $\rightarrow$ SQL 코드|
 |---|---|---|
-|.|단일 문자|고객회사명이 5글자 이상<br> $\rightarrow$ WHERE 고객회사명 REGEXP '.....'|
-|$\|$|OR|도시가 '과천시' 또는 '오산시'<br> $\rightarrow$WHERE 도시 REGEXP '과천시$\|$오산시'|
-|[]|[]안에 나열된 패턴에 해당하는 문자열|도시가 '인천광역시' 또는 '부산광역시' 또는 '대전광역시'<br>$\rightarrow$WHERE 도시 [인천$\|$부산$\|$대전]광역시'|
-|^|시작하는 문자열|'한'으로 시작하는 고객회사명<br>$\rightarrow$WHERE 고객회사명 REGEXP '^한'|
-|$|끝나는 문자열|고객회사명이 5글자이면서 데이터 중 4번째 글자가 '푸'인 고객회사명<br>$\rightarrow$WHERE 고객회사명 REGEXP '^...푸.$'|
-|*|0번 이상|'정'이 0번 이상 들어있는 담당자명<br>$\rightarrow$WHERE 담당자명 REGEXP '정*'|
-|+|1번 이상|'정'이 1번 이상 들어있는 담당자명<br>$\rightarrow$WHERE 담당자명 REGEXP '정+'|
-|[^문자]|괄호 안의 문자 제외|고객번호 맨 뒷자리에 'H'~'Z'가 들어가지 않는 고객번호<br>$\rightarrow$WHERE 고객번호 REGEXP '[^H-Z]$'|
-|{m}|m회|고객회사명이 5글자<br>$\rightarrow$WHERE 고객회사명 REGEXP '^.{5}$';<br>'T'나 'S'가 2회 나타나는 고객번호(TT,SS,TS,ST)<br>$\rightarrow$WHERE 고객번호 REGEXP '[TS]{2}';|
-|{m,n}|m회 이상<br>n회 이하|'T'나 'S'가 1회 이상 2회 이하 나타나는 고객번호(T,S,TT,SS,TS,ST)<br>$\rightarrow$WHERE 고객번호 REGEXP '[TS]{1,2}';|
+|.|단일 문자|고객회사명이 5글자 이상<br> $\rightarrow$ `WHERE 고객회사명 REGEXP '.....'`|
+|$\|$|OR|도시가 '과천시' 또는 '오산시'<br> $\rightarrow$ `WHERE 도시 REGEXP '과천시$\|$오산시'`|
+|[]|[]안에 나열된 패턴에 해당하는 문자열|도시가 '인천광역시' 또는 '부산광역시' 또는 '대전광역시'<br> $\rightarrow$ `WHERE 도시 [인천$\|$부산$\|$대전]광역시'`|
+|^|시작하는 문자열|'한'으로 시작하는 고객회사명<br> $\rightarrow$ `WHERE 고객회사명 REGEXP '^한'`|
+|$|끝나는 문자열|고객회사명이 5글자이면서 데이터 중 4번째 글자가 '푸'인 고객회사명<br> $\rightarrow$ `WHERE 고객회사명 REGEXP '^...푸.$'`|
+|*|0번 이상|'정'이 0번 이상 들어있는 담당자명<br> $\rightarrow$ `WHERE 담당자명 REGEXP '정*'`|
+|+|1번 이상|'정'이 1번 이상 들어있는 담당자명<br> $\rightarrow$ `WHERE 담당자명 REGEXP '정+'`|
+|[^문자]|괄호 안의 문자 제외|고객번호 맨 뒷자리에 'H'~'Z'가 들어가지 않는 고객번호<br> $\rightarrow$ `WHERE 고객번호 REGEXP '[^H-Z]$'`|
+|{m}|m회|고객회사명이 5글자<br> $\rightarrow$ `WHERE 고객회사명 REGEXP '^.{5}$';`<br>'T'나 'S'가 2회 나타나는 고객번호(TT,SS,TS,ST)<br> $\rightarrow$ `WHERE 고객번호 REGEXP '[TS]{2}';`|
+|{m,n}|m회 이상<br>n회 이하|'T'나 'S'가 1회 이상 2회 이하 나타나는 고객번호(T,S,TT,SS,TS,ST)<br> $\rightarrow$ `WHERE 고객번호 REGEXP '[TS]{1,2}';`|
 
