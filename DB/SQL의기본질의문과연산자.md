@@ -76,7 +76,7 @@ ORDER BY 4 DESC;
 
 ### IS NULL 연산자
 
-*NULL(Unknown Value)**
+**NULL(Unknown Value)**
 - NULL은 알 수 없는 값을 의미함
 - 0이나 빈 문자열(Empty String)과는 다른 의미
 - 컬럼에 값이 들어있지 않은 데이터를 검색하기 위해서는 IS NULL을 사용해야 함
@@ -120,8 +120,8 @@ ORDER BY 4 DESC;
 
 |패턴 문자|설명|예시 문제 $\rightarrow$ SQL 코드|
 |---|---|---|
-|.|단일 문자|고객회사명이 5글자 이상<br>$\rightarrow$WHERE 고객회사명 REGEXP '.....'|
-|$\|$|OR|도시가 '과천시' 또는 '오산시'<br>$\rightarrow$WHERE 도시 REGEXP '과천시$\|$오산시'|
+|.|단일 문자|고객회사명이 5글자 이상<br> $\rightarrow$ WHERE 고객회사명 REGEXP '.....'|
+|$\|$|OR|도시가 '과천시' 또는 '오산시'<br> $\rightarrow$WHERE 도시 REGEXP '과천시$\|$오산시'|
 |[]|[]안에 나열된 패턴에 해당하는 문자열|도시가 '인천광역시' 또는 '부산광역시' 또는 '대전광역시'<br>$\rightarrow$WHERE 도시 [인천$\|$부산$\|$대전]광역시'|
 |^|시작하는 문자열|'한'으로 시작하는 고객회사명<br>$\rightarrow$WHERE 고객회사명 REGEXP '^한'|
 |$|끝나는 문자열|고객회사명이 5글자이면서 데이터 중 4번째 글자가 '푸'인 고객회사명<br>$\rightarrow$WHERE 고객회사명 REGEXP '^...푸.$'|
