@@ -33,7 +33,9 @@ $\rightarrow$ 단순성, 의사소통, 피드백, 용기, 존중
 - 액티비티 다이어그램
 
 ## UI의 종류
+
 (1) CLI
+
 (2) GUI
 (3) NUI(Natural User Interface): 직관적(터치, 음성 등) 사용자 반응
 (4) OUI(Organic User Interface): 모든 사물이나 물질들
@@ -61,6 +63,7 @@ $\rightarrow$ 단순성, 의사소통, 피드백, 용기, 존중
 ## 응집도 높은 순서
 
 기능적(Functional)
+
 순차적(Sequential)
 통신(교환)적(Communication)
 절차적(Procedural)
@@ -84,6 +87,7 @@ $\rightarrow$ 단순성, 의사소통, 피드백, 용기, 존중
 ## 결합도 낮은 순서
 
 자료(Data)
+
 스탬프(Stamp)
 제어(Control)
 외부(External)
