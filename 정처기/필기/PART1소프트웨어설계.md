@@ -3,6 +3,7 @@
 **XP(eXtreme Programming)**
 
 XP의 5가치 가치
+
 $\rightarrow$ 단순성, 의사소통, 피드백, 용기, 존중
 
 ## 객체지향 방법론
@@ -37,10 +38,15 @@ $\rightarrow$ 단순성, 의사소통, 피드백, 용기, 존중
 (1) CLI
 
 (2) GUI
+
 (3) NUI(Natural User Interface): 직관적(터치, 음성 등) 사용자 반응
+
 (4) OUI(Organic User Interface): 모든 사물이나 물질들
+
 (5) CUI(Cell User Interface): 셀 기반의 사용자 인터페이스
+
 (6) MUI(Mobile User Interface): 모바일 장치, 사용자 경험(UX), 직관적
+
 
 ## UI의 설계 원칙
 - 직관성: 누구나 쉽게 사용 가능하도록
@@ -65,11 +71,17 @@ $\rightarrow$ 단순성, 의사소통, 피드백, 용기, 존중
 기능적(Functional)
 
 순차적(Sequential)
+
 통신(교환)적(Communication)
+
 절차적(Procedural)
+
 시간적(Temporal)
+
 논리적(Logical)
+
 우연적(Coincidental)
+
 
 **우**리 놀(**논**)던 **시절 통 순**수했던 **기**억뿐이네
 
@@ -89,10 +101,15 @@ $\rightarrow$ 단순성, 의사소통, 피드백, 용기, 존중
 자료(Data)
 
 스탬프(Stamp)
+
 제어(Control)
+
 외부(External)
+
 공통(Common)
+
 내용(Content)
+
 
 **내공**을 높이기 위해 **외재 스(쓰)자**
 
