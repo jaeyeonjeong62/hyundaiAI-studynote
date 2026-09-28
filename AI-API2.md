@@ -179,3 +179,17 @@ except requests.exceptions.RequestException as error:
 
 **날씨 서버에 HTTP GET → JSON에서 기온 추출 → AI 서버에 HTTP POST → 생성된 답변 출력**
 
+---
+
+| 상태코드 | 뜻 | 흔한 원인 |
+|---|---|---|
+| **200 OK** | 요청 성공 | 데이터를 정상적으로 받음 |
+| **201 Created** | 생성 성공 | POST로 새 데이터가 만들어짐 |
+| **400 Bad Request** | 요청 형식이 잘못됨 | 필수 값 누락, 잘못된 파라미터 |
+| **401 Unauthorized** | 인증이 필요하거나 실패함 | API 키가 없거나 잘못됨 |
+| **403 Forbidden** | 접근이 금지됨 | 키는 있어도 해당 기능을 쓸 권한이 없음 |
+| **404 Not Found** | 요청한 주소나 대상이 없음 | URL 오타, 존재하지 않는 데이터 |
+| **429 Too Many Requests** | 요청을 너무 많이 보냄 | API 사용량·속도 제한 초과 |
+| **500 Internal Server Error** | 서버 내부 오류 | API 제공 서버의 문제 |
+| **503 Service Unavailable** | 서버가 일시적으로 응답하기 어려움 | 점검 또는 과부하 |
+
